@@ -1,7 +1,9 @@
 body {
-    height: 98vh;
+    height: 100vh;
     display: flex;
     background-color: rgb(83, 83, 83);
+    margin: 0;
+    width: 100%;
 }
 
 #header {
@@ -18,19 +20,20 @@ body {
 body> div, form {
     height: 100%;
     
-    padding: 5px;
-    border-radius: 10px;
 }
 
 #left-pannel {
     float: left;
-    width: 100px;
+    width: 150px;
     position: relative;
     background-color: rgb(36, 36, 36);
 }
 
 #control-pannel img {
-    width: 20px;
+    width: 50px;
+    
+    border-radius: 25px;
+
 }
 
 #control-pannel {
@@ -38,6 +41,37 @@ body> div, form {
     bottom: 0;
 }
 
-#convo-chat {
-    flex:auto;
+
+/*Main chat section*/
+#convo {
+    display: flex;
+    justify-content: end;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    position: relative;
 }
+
+#convo-chat {
+    padding-bottom: 5px;
+    width: 100%;
+    overflow: scroll;
+    flex-grow: 1;
+    height: 100%;    
+    display: flex;
+    justify-content: end;
+    flex-direction: column;
+}
+
+#message-edit {
+    height: 30px;
+    width: 100%;
+}
+
+#message-edit > input {
+    bottom: 0;
+    position: absolute;
+    right: 5px;
+    left: 5px;
+}
+

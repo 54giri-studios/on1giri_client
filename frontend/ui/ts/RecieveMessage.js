@@ -1,3 +1,17 @@
+class Message {
+
+    constructor(author, content) {
+        this.author = author;
+        this.content = content;
+    }
+
+    display() {
+        let messageBloc = document.createElement('div');
+        messageBloc.innerText = this.author + ': ' + this.content;
+        return messageBloc;
+    }
+}
+
 const button = document.getElementById("submit");
 var chat
 
@@ -8,9 +22,7 @@ async function display_message(e) {
     invoke('get_message', {}).then((response) => {
         let author = response.author;
         let content = response.message;
-        let messageBloc = document.createElement('div');
-        messageBloc.innerText = author + ': ' + content;
-        console.log(chat)
+        let messageBloc = new Message(author, content).display();
         chat.appendChild(messageBloc);
     })
 }

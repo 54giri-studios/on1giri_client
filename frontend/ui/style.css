@@ -4,6 +4,8 @@ body {
     background-color: rgb(83, 83, 83);
     margin: 0;
     width: 100%;
+    display: flex;
+    flex-direction:row;
 }
 
 #header {
@@ -12,19 +14,18 @@ body {
 }
 
 #server-nav {
-    width: 70px;
+    width: 5%;
     height: 100%;
     color: grey;
 }
 
 body> div, form {
     height: 100%;
-    
 }
 
 #left-pannel {
     float: left;
-    width: 150px;
+    width: 10%;
     position: relative;
     background-color: rgb(36, 36, 36);
 }
@@ -39,6 +40,11 @@ body> div, form {
 #control-pannel {
     position: absolute;
     bottom: 0;
+    width: 150px;
+}
+
+#channel-list {
+    width: 150px;
 }
 
 
@@ -48,19 +54,29 @@ body> div, form {
     justify-content: end;
     flex-direction: column;
     height: 100%;
-    width: 100%;
+    width: 85%;
     position: relative;
+    overflow: scroll;
 }
 
 #convo-chat {
     padding-bottom: 5px;
     width: 100%;
-    overflow: scroll;
     flex-grow: 1;
-    height: 100%;    
     display: flex;
     justify-content: end;
     flex-direction: column;
+    overflow-y: scroll;
+}
+
+#convo-chat>div {
+    width: 100%;
+    display: inline-block;
+    word-wrap: break-word;
+}
+
+#convo-chat>div:hover{
+    background-color: rgb(59, 59, 59);
 }
 
 #message-edit {
@@ -73,5 +89,6 @@ body> div, form {
     position: absolute;
     right: 5px;
     left: 5px;
+    margin: 5px;
 }
 

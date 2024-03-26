@@ -13,6 +13,10 @@ body {
     color: aliceblue;
 }
 
+#popup {
+    background-color: red;
+}
+
 #server-nav {
     width: 5%;
     height: 100%;
@@ -56,7 +60,11 @@ body> div, form {
     height: 100%;
     width: 85%;
     position: relative;
-    overflow: scroll;
+}
+
+#convo-chat-wrapper {
+    max-height: 97%;
+    overflow-y: scroll;
 }
 
 #convo-chat {
@@ -64,9 +72,9 @@ body> div, form {
     width: 100%;
     flex-grow: 1;
     display: flex;
+    row-gap: 5px;
     justify-content: end;
     flex-direction: column;
-    overflow-y: scroll;
 }
 
 #convo-chat>div {
@@ -80,6 +88,7 @@ body> div, form {
 }
 
 #message-edit {
+    flex-grow: 1;
     height: 30px;
     width: 100%;
 }

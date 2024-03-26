@@ -2,6 +2,10 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 
+use tokio::sync::Mutex;
+use std::collections::HashMap;
+
+mod channel;
 
 #[tauri::command]
 fn say_hello(name: &str) -> String {
@@ -23,14 +27,19 @@ async fn get_message() -> Result<Message, String> {
   Ok(m)
 }
 
-#[tauri::command]
-async fn post_message(author: String, content: String) -> () {
-  println!("{}: {}", author, content);
-}
 
 fn main() {
-  tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![say_hello, get_message, post_message])
-    .run(tauri::generate_context!())
-    .expect("error while running tauri application");
+    simple_logger::init().unwrap();
+
+    tauri::Builder::default()
+        .manage(channel::ChannelState {
+            state: Mutex::new(HashMap::new()),
+        })
+        .invoke_handler(tauri::generate_handler![
+            say_hello,
+            channel::susbcribe_to_channel,
+            channel::post_message
+        ])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
 }

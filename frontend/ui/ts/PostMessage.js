@@ -9,7 +9,10 @@ message_edit_section.addEventListener('submit', (e) => {
 async function post_message(e, message) {
     e.preventDefault();
     invoke('post_message', {author: "me", content: message}).then(() => {
-        let messageBloc = new Message("me", message).display();
+        let author = "me";
+        let content = message;
+        let messageBloc = document.createElement('div');
+        messageBloc.innerText = author + ': ' + content;
         chat.appendChild(messageBloc);
     })
 }

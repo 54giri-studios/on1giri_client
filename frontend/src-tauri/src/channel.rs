@@ -1,6 +1,6 @@
 use eventsource::reqwest::Client;
 use std::collections::HashMap;
-use tauri::{AppHandle, Manager, State};
+use tauri::{async_runtime, AppHandle, Manager, State};
 use tokio::sync::Mutex;
 use tokio_util::sync::CancellationToken;
 

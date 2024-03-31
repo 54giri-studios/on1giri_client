@@ -21,6 +21,8 @@ body {
     width: 5%;
     height: 100%;
     color: grey;
+    display: flex;
+    flex-direction: column;
 }
 
 body> div, form {

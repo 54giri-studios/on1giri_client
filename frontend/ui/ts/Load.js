@@ -1,3 +1,11 @@
+function getCookieValue(name) {
+  // not my code 'cause i'm too lazy to write something like this (https://stackoverflow.com/questions/10730362/get-cookie-by-name)
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+
 let body;
 let chat;
 let join;
@@ -26,6 +34,8 @@ function onReady() {
       }, false);
 
     subscribe = document.getElementById("subscribe");
+
+    document.cookie = "username=user1";
 
     loadServerButtons();
   }

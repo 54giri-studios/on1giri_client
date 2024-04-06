@@ -10,9 +10,9 @@ async function loadServerButtons() {
 }
 
 async function loadServerChannels(serverid) {
+    //should call get_server_channels(sever_id) from backend
     let button = document.getElementById("channel" + serverid);
     if (button == null) {
-        //should call get_server_channels(sever_id) from backend
         channel_id = 1;
         console.log("loading")
         button = document.createElement("button");
@@ -20,7 +20,9 @@ async function loadServerChannels(serverid) {
         button.textContent = "channel1";
         button.id = "channel" + serverid;
         serverchannels.appendChild(button);
-        button.addEventListener("click", ()=>loadChannelMessages(channel_id), false);
+        button.addEventListener("click", async (e)=>{
+            await loadChannelMessages(e, channel_id);
+            }, false);
     } else {
         //channel was already loaded
         button.style.display = "block";
@@ -28,28 +30,22 @@ async function loadServerChannels(serverid) {
     }
 }
 
-async function loadChannelMessages(channelid) {
+async function loadChannelMessages(e, channelid) {
     // get latest30msg(channelid)
-    await loadChannelUsers(channelid);
-    await subscribeToChannel(channelid);
-    let author = "user0";
-    let content = "hello";
-    let messageBloc = new Message(author, content).display();
-    chat.appendChild(messageBloc);
-    
+    get_in_channel(e).then(async (response)=>{
+        await loadChannelUsers(channelid);
+        let author = "user0";
+        let content = "hello";
+        let messageBloc = new Message(author, content).display();
+        chat.appendChild(messageBloc);
+    }).catch((response)=>console.log(response));
 }
 
-async function subscribeToChannel(id) {
-    clearMessages();
-    console.log(id);
-    invoke('susbcribe_to_channel', {channelId:id});
-}
 
 async function loadChannelUsers(channelid) {
     
 }
 
 function clearMessages() {
-    console.log(chat);
     chat.textContent = "";
 }

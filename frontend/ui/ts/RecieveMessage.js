@@ -3,21 +3,22 @@
 // You can uncomment this if you've added to your ui
 
 // A button should permit to the user to subscribe to a particular channel
-// async function get_in_channel(e) {
-//   e.preventDefault();
-//   console.log("Call to the subscribe_to_channel api endpoint");
-//   // The channel id should correspond to the target channel
-//   invoke("susbcribe_to_channel", { channelId: 1 });
-// }
+async function get_in_channel(e) {
+  e.preventDefault();
+  console.log("Call to the subscribe_to_channel api endpoint");
+  // The channel id should correspond to the target channel
+  invoke("susbcribe_to_channel", { channelId: 1 });
+}
 
 // The endpoint trigger a new tauri event called new_message
 // on all windows
 // This is the callback function that should be triggered
 // Modify it to the needs
-// listen("new_message", (message) => {
-//   console.log("I received a message");
-//   console.log(message);
-// });
+listen("new_message", (message) => {
+  console.log("I received a message");
+  console.log(message);
+  display_message(msg);
+});
 
 class Message {
   constructor(author, content) {
@@ -32,23 +33,9 @@ class Message {
   }
 }
 
-const button = document.getElementById("submit");
-var chat;
-
-button.addEventListener("click", (e) => display_message(e), false);
-
-async function display_message(e) {
-  e.preventDefault();
-  invoke("get_message", {}).then((response) => {
-    let author = response.author;
-    let content = response.message;
-    let messageBloc = new Message(author, content).display();
-    chat.appendChild(messageBloc);
-  });
+async function display_message(msg) {
+  let author = msg.author;
+  let content = msg.message;
+  let messageBloc = new Message(author, content).display();
+  chat.appendChild(messageBloc);
 }
-
-function onReady() {
-  chat = document.getElementById("convo-chat");
-}
-
-window.addEventListener("load", () => onReady());

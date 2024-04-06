@@ -1,4 +1,4 @@
-FROM "debian"
+FROM "debian:bullseye-slim"
 
 # Update and install dependencies
 RUN apt-get update && apt-get install -y \
@@ -13,30 +13,37 @@ RUN apt-get update && apt-get install -y \
     libsoup2.4-dev \
     libwebkit2gtk-4.0-dev
 
-# Install Rust 1.70
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain 1.70.0
-ENV PATH="/root/.cargo/bin:${PATH}"
-
 # Install Node.js 21.6.2
+
+WORKDIR /app
+
 RUN curl -sL https://deb.nodesource.com/setup_21.x | bash -
 RUN apt-get install -y nodejs
 
-RUN useradd -ms /bin/bash cli
 
-WORKDIR /home/cli
+# Install Rust 1.70
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain 1.74.0
+
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+RUN rustup component add rust-analyzer
 
 # Copy the source code from parent directory to the working directory
 COPY . .
 
+RUN cargo install tauri-cli
+
 # Install tauri dependencies
-RUN npm install -g @tauri-apps/cli@latest @tauri-apps/api@latest
+RUN npm install @tauri-apps/api@latest
 
 
 # Build the application for release purpose
-RUN cargo build --release --manifest-path=./src-tauri/Cargo.toml --no-default-features
+#RUN cargo build --release --manifest-path=./src-tauri/Cargo.toml --no-default-features
+
+WORKDIR /app/src-tauri
 
 # Run the application for release purpose
 # CMD ["./src-tauri/target/release/app"]
 
 # Run the application for development purpose
-CMD ["tauri", "dev"]
+CMD ["cargo", "tauri", "dev"]

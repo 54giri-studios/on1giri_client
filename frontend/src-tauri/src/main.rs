@@ -6,6 +6,11 @@ use std::collections::HashMap;
 use tokio::sync::Mutex;
 
 pub mod channel;
+pub mod guild;
+pub mod message;
+pub mod result;
+pub mod user;
+pub mod utils;
 
 fn main() {
     simple_logger::init().unwrap();

@@ -131,4 +131,15 @@ pub async fn send_message(channel_id: u32, message_type: message::MessageType, m
 
 }
 
+
+
+#[tauri::command]
+pub async fn get_channel_users(channel_id: i32) -> Result<result::OperationResult, result::OperationResult> {
+
+    let endpoint = format!("/channel/{}", channel_id);
+
+    match utils::build_url(endpoint) {
+        Ok(url) => utils::fetch_data(url).await,
+        Err(e) => Err(e),
+    }
 }

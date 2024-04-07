@@ -1,35 +1,10 @@
 use eventsource::reqwest::Client;
+use serde::Serialize;
 use std::collections::HashMap;
-use tauri::{async_runtime, AppHandle, Manager, State};
+use tauri::{AppHandle, Manager, State};
 use tokio::sync::Mutex;
 use tokio_util::sync::CancellationToken;
-
-#[derive(serde::Serialize, Clone, Debug)]
-enum MessageType {
-    CONNECT,
-    SEND,
-    QUIT,
-    NONE,
-}
-
-#[derive(serde::Serialize, Clone, Debug)]
-struct Message {
-    room_id: u32,
-    message_type: MessageType,
-    message_content: String,
-}
-
-#[derive(serde::Serialize)]
-enum ResultCode {
-    ERROR,
-    SUCCESS,
-}
-
-#[derive(serde::Serialize)]
-pub struct OperationResult {
-    content: String,
-    code: ResultCode,
-}
+use super::*;
 
 // Struct that will store the Cancellationtokens
 // corresponding to the different channels that the client
@@ -56,7 +31,7 @@ fn verify_user_isnt_listening(
 
 fn listen_and_emit_messages(channel_id: i32, app: AppHandle, token: CancellationToken) {
     let url =
-        reqwest::Url::parse(format!("http://127.0.0.1:8000/subscribe/{}", channel_id).as_str())
+        reqwest::Url::parse(format!("{}/subscribe/{}", std::env::var("SERVER_URL").ok().unwrap_or(String::from("http://127.0.0.1:8000")), channel_id).as_str())
             .unwrap();
 
     let client = Client::new(url);
@@ -71,21 +46,21 @@ fn listen_and_emit_messages(channel_id: i32, app: AppHandle, token: Cancellation
 }
 
 #[tauri::command]
-pub async fn susbcribe_to_channel(
+pub async fn subscribe(
     channel_id: i32,
     app: AppHandle,
     state: State<'_, ChannelState>,
-) -> Result<OperationResult, OperationResult> {
+) -> Result<result::OperationResult, result::OperationResult> {
     log::trace!("Subscribe function called");
     let mut tokens = state.state.lock().await;
 
     match verify_user_isnt_listening(channel_id, &tokens) {
         Ok(_) => {}
         Err(e) => {
-            return Err(OperationResult {
-                content: e,
-                code: ResultCode::ERROR,
-            });
+            return Err(result::OperationResult::new(
+                e,
+                result::ResultCode::ERROR,
+            ));
         }
     }
 
@@ -100,16 +75,60 @@ pub async fn susbcribe_to_channel(
             .clone(),
     );
 
-    return Ok(OperationResult {
-        content: format!(
+    return Ok(result::OperationResult::new(
+        format!(
             "Stopped listening for messages from channel: {}",
             channel_id
         ),
-        code: ResultCode::SUCCESS,
-    });
+        result::ResultCode::SUCCESS,
+    ));
 }
 
+
 #[tauri::command]
-pub async fn post_message(author: String, content: String) -> () {
-    println!("{}: {}", author, content);
+pub async fn send_message(channel_id: u32, message_type: message::MessageType, message_content: String) -> Result<result::OperationResult, result::OperationResult> {
+    let message = message::Message::new(channel_id, message_type, message_content);
+
+    let message = serde_json::to_string(&message).unwrap();
+    
+    // WARNING should precise the endpoint
+    let url = reqwest::Url::parse(std::env::var("SERVER_URL").ok().unwrap_or(String::from("http://127.0.0.1:8000")).as_str()).unwrap();
+
+    let client = reqwest::Client::new();
+
+    let response = client.post(url)
+        .body(message)
+        .send()
+        .await
+        .unwrap();
+
+    match response {
+        r if r.status().is_success() => {
+            return Ok(result::OperationResult::new(
+                "Message sent successfully".to_string(),
+                result::ResultCode::SUCCESS,
+            ));
+        }
+        r if r.status().is_server_error() => {
+            return Err(result::OperationResult::new(
+                "Server error".to_string(),
+                result::ResultCode::ERROR,
+            ));
+        }
+        r if r.status().is_client_error() => {
+            return Err(result::OperationResult::new(
+                "Client error".to_string(),
+                result::ResultCode::ERROR,
+            ));
+        }
+        _ => {
+            return Err(result::OperationResult::new(
+                "Unknown error".to_string(),
+                result::ResultCode::ERROR,
+            ));
+        }
+    }
+
+}
+
 }

@@ -3,6 +3,7 @@
 
 
 use tokio::sync::Mutex;
+use dotenv::dotenv;
 use std::collections::HashMap;
 
 mod channel;
@@ -30,6 +31,7 @@ async fn get_message() -> Result<Message, String> {
 
 fn main() {
     simple_logger::init().unwrap();
+    dotenv().ok();
 
     tauri::Builder::default()
         .manage(channel::ChannelState {

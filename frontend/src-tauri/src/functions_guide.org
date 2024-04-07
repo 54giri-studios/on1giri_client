@@ -1,0 +1,71 @@
+* Guide des fonctions
+
+Pour toutes ses fonctions, il serait nécessaire de rajouter dans le futur, un token qui serait passé dans l'entête de toutes les requetes, pour l'instant ce n'est pas le cas.
+
+** Guilds ( ou server )
+
+*** pub async fn add_user_to_guild(guild_id: i32, user_id: i32) -> Result<result::OperationResult, result::OperationResult>
+
+Ajoute un utilisateur à une guild qui ici représente un server
+
+*** pub async fn get_guild_channels(guild_id: i32) -> Result<result::OperationResult, result::OperationResult>
+
+Récupère la liste des canaux de discussion d'une guild en particulier
+
+
+** User
+
+*** pub async fn get_user_guilds(user_id: i32) -> Result<result::OperationResult, result::OperationResult>
+
+Renvoie la liste des guild auxquelles appartient l'utilisateur
+
+
+*** pub async fn get_user_info(user_id: i32) -> Result<result::OperationResult, result::OperationResult>
+
+Renvoie les informations sur l'utilisateur connecté
+
+NB: faudrait que le token soit bien vérifier pour la correspondance avec l'id
+
+
+*** pub async fn login(username: String,password: String) -> Result<result::OperationResult, result::OperationResult>
+
+Permet d'authentifier l'utilisateur et donc de démarrer sa session.
+
+NB: La sauvegarde dans le storage de l'application n'a pas été implémenté parce qu'il n'y a pas de gestionnaire de paquets dans la partie frontend du projet, faudrait peut-être y penser maintenant
+
+
+
+** Channel
+
+*** pub async fn get_channel_users(channel_id: i32) -> Result<result::OperationResult, result::OperationResult>
+
+Renvoie la liste des utilisateurs appartenant au canal
+
+NB: Faudrait vérifier que l'utilisateur qui effectue cette requête appartient lui-même au canal
+
+
+*** pub async fn send_message(channel_id: u32, message_type: message::MessageType, message_content: String) -> Result<result::OperationResult, result::OperationResult>
+
+Envoyer un nouveau message sur le canal
+
+NB: Faudrait vérifier que l'utilisateur qui effectue cette requête appartient au canal 
+
+
+*** pub async fn subscribe(channel_id: i32,app: AppHandle, state: State<'_, ChannelState>,) -> Result<result::OperationResult, result::OperationResult>
+
+Permet de souscrire à une chaine afin de recevoir les messages qui transitent sur cette chaine
+
+
+
+** Message
+
+*** pub async fn get_latest_messages(channel_id: i32,amount: i32,) -> Result<result::OperationResult, result::OperationResult>
+
+Renvoie les amount messages les plus récents provenant du canal ayant pour id channel_id
+
+
+*** pub async fn get_messages(channel_id: i32,message_id: i32,amount: i32,) -> Result<result::OperationResult, result::OperationResult>
+
+Renvoie les amount messages précédents le message dont l'id est message_id provenant du canal ayant pour id channel_id
+
+

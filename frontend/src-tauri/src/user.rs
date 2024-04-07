@@ -38,9 +38,10 @@ pub async fn login(
     return result;
 }
 
-
 #[tauri::command]
-pub async fn get_user_info(user_id: i32) -> Result<result::OperationResult, result::OperationResult> {
+pub async fn get_user_info(
+    user_id: i32,
+) -> Result<result::OperationResult, result::OperationResult> {
     let endpoint = format!("/user/{}", user_id);
 
     match utils::build_url(endpoint) {
@@ -50,7 +51,9 @@ pub async fn get_user_info(user_id: i32) -> Result<result::OperationResult, resu
 }
 
 #[tauri::command]
-pub async fn get_user_guilds(user_id: i32) -> Result<result::OperationResult, result::OperationResult> {
+pub async fn get_user_guilds(
+    user_id: i32,
+) -> Result<result::OperationResult, result::OperationResult> {
     let endpoint = format!("/user/{}/guilds", user_id);
 
     match utils::build_url(endpoint) {

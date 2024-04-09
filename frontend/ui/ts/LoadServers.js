@@ -1,33 +1,51 @@
 async function loadServerButtons() {
     //should call get_servers from rust backend
-    let serverid = 42; //dummy value
-    let button = document.createElement("button");
-    button.className = "server-button";
-    button.textContent = "server1";
-    button.id = "server" + serverid;
-    servertab.appendChild(button);
-    button.addEventListener("click", loadServerChannels)
+    invoke("get_user_guilds", {userId: userId}).then((result)=>{
+        for (server in result.data) {
+            let serverid = server.id; //dummy value
+            let button = document.createElement("button");
+            button.className = "server-button";
+            button.textContent = server.name;
+            button.id = "server" + serverid;
+            servertab.appendChild(button);
+            button.addEventListener("click", ()=> loadServerChannels(serverid));
+        }
+    }).catch(()=>{
+        console.log("failed to get server ids");
+    });
 }
 
 async function loadServerChannels(serverid) {
-    //should call get_server_channels(sever_id) from backend
-    let button = document.getElementById("channel" + serverid);
-    if (button == null) {
-        channel_id = 1;
-        console.log("loading")
-        button = document.createElement("button");
-        button.className = "channel";
-        button.textContent = "channel1";
-        button.id = "channel" + serverid;
-        serverchannels.appendChild(button);
-        button.addEventListener("click", async (e)=>{
-            await loadChannelMessages(e, channel_id);
-            }, false);
-    } else {
-        //channel was already loaded
-        button.style.display = "block";
-        console.log("already loaded");
-    }
+    clearChannels();
+    invoke("get_guild_channels", {guildId: serverid}).then((result)=>{
+        let channelList = result.data;
+
+        for (channel in channelList) {
+            let button = document.getElementById("channel" + channel.id);
+            if (button == null) {
+                channel_id = 1;
+                console.log("loading")
+                button = document.createElement("button");
+                button.className = "channel";
+                button.textContent = channel.name;
+                button.id = "channel" + channel.id;
+                serverchannels.appendChild(button);
+                button.addEventListener("click", async (e)=>{
+                    document.getElementById("convo").style.display = "flex";
+                    channelid = channel_id;
+                    await loadChannelMessages(e, channel_id);
+                    }, false);
+            } else {
+                //channel was already loaded
+                button.style.display = "block";
+                console.log("already loaded");
+            }
+        }
+
+
+    }).catch(()=>{
+        console.log("failed to get guild channels");
+    });
 }
 
 async function loadChannelMessages(e, channelid) {
@@ -44,6 +62,10 @@ async function loadChannelMessages(e, channelid) {
 
 async function loadChannelUsers(channelid) {
     
+}
+
+function clearChannels() {
+    serverchannels.textContent = "";
 }
 
 function clearMessages() {

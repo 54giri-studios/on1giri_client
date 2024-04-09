@@ -22,7 +22,15 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             channel::subscribe,
-            channel::send_message
+            channel::send_message,
+            channel::get_channel_users,
+            guild::get_guild_channels,
+            guild::add_user_to_guild,
+            message::get_messages,
+            message::get_latest_messages,
+            result::login,
+            result::get_user_info,
+            result::get_user_guilds
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

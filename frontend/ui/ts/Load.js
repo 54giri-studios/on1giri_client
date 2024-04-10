@@ -13,6 +13,8 @@ let servertab;
 let serverchannels;
 let message_edit_section;
 let subscribe;
+let currentChannelId = -1;
+let userId = 42;
 
 function onReady() {
     chat = document.getElementById("convo-chat");
@@ -33,11 +35,23 @@ function onReady() {
       post_message(e, message);
       }, false);
 
+    document.getElementById("login-form").addEventListener("submit", login, false);
+
     subscribe = document.getElementById("subscribe");
-
-    document.cookie = "username=user1";
-
     loadServerButtons();
+  }
+
+  function login() {
+    let form = document.getElementById("login-form");
+    let usernameInput = form.firstChild.value;
+    let passwordInput = form.lastChild.value;
+    invoke("login", {username:usernameInput, password:passwordInput}).then((result)=>{
+      document.cookie = "TOKEN="+result.data.token;
+      userid = result.userId;
+      form.style.display = "none";
+    }).catch(()=>{
+      console.log("Failed to login");
+    })
   }
   
   window.addEventListener("load", () => onReady());

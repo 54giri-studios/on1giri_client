@@ -86,8 +86,8 @@ pub async fn subscribe(
 
 
 #[tauri::command]
-pub async fn send_message(channel_id: u32, message_type: message::MessageType, message_content: String) -> Result<result::OperationResult, result::OperationResult> {
-    let message = message::Message::new(channel_id, message_type, message_content);
+pub async fn send_message(channel_id: u32, message_content: String) -> Result<result::OperationResult, result::OperationResult> {
+    let message = message::Message::new(channel_id, message::MessageType::SEND, message_content);
 
     let message = serde_json::to_string(&message).unwrap();
     

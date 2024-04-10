@@ -56,7 +56,7 @@ body> div, form {
 
 /*Main chat section*/
 #convo {
-    display: flex;
+    display: none;
     justify-content: end;
     flex-direction: column;
     height: 100%;

@@ -7,7 +7,7 @@ async function get_in_channel(e) {
   e.preventDefault();
   console.log("Call to the subscribe_to_channel api endpoint");
   // The channel id should correspond to the target channel
-  await invoke("subscribe", { channelId: 1 });
+  invoke("susbcribe_to_channel", { channelId: 1 });
 }
 
 // The endpoint trigger a new tauri event called new_message
@@ -33,9 +33,17 @@ class Message {
   }
 }
 
+
+
 async function display_message(msg) {
   let author = msg.author;
   let content = msg.message;
   let messageBloc = new Message(author, content).display();
   chat.appendChild(messageBloc);
 }
+
+function onReady() {
+  chat = document.getElementById("convo-chat");
+}
+
+window.addEventListener("load", () => onReady());

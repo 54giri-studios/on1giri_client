@@ -28,9 +28,9 @@ fn main() {
             guild::add_user_to_guild,
             message::get_messages,
             message::get_latest_messages,
-            result::login,
-            result::get_user_info,
-            result::get_user_guilds
+            user::login,
+            user::get_user_info,
+            user::get_user_guilds
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

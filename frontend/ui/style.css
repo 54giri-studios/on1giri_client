@@ -29,24 +29,41 @@ body {
     flex-direction:row;
 }
 
-#login-form {
-    display: flex;
+.popupForm {
     position: fixed;
     height: 100%;
     width: 100%;
-    z-index: 42;
-    background-color: rgb(58, 77, 96);
+    background-color: var(--main-color);
     justify-content: center;
+    align-items: center;
+}
+
+.popupForm > form {
+    background-color: var(--conversations-color);
+    display: flex;
+    height: fit-content;
+    width: fit-content;
+    flex-direction: column;
+    border-radius: 5px;
+    border: 5px solid var(--conversations-color);
+}
+
+#login-form {
+    display: flex;
+    z-index: 42;
 }
 
 #login-form > form {
     display: flex;
-    max-height: 50%;
-    flex-direction: column;
 }
-#login-form > form > input, button {
-    max-height: 20%;
-    font-size:large ;
+
+#create-account-form {
+    display: none;
+    z-index: 42;
+}
+
+#create-account-form > form{
+    display: flex;
 }
 
 #server-join-form {
@@ -78,16 +95,15 @@ input {
     margin: 10px;
     background-color: var(--text-input-box-color);
     border-radius: 5px;
+    font-size: large;
 }
 
 button {
     line-height: 1;
     height: max-content;
+    font-size: larger;
 }
 
-#popup {
-    background-color: red;
-}
 
 #server-nav {
     width: 5%;

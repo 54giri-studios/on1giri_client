@@ -14,8 +14,10 @@ let serverchannels;
 let message_edit_section;
 let subscribe;
 let currentChannelId = -1;
-let userId = 42;
+let userId = 0;
 let channelId = 0;
+let loginForm;
+let createAccountForm;
 
 function onReady() {
   chat = document.getElementById("convo-chat");
@@ -37,14 +39,27 @@ function onReady() {
     post_message(e, message);
     }, false);
 
-  document.getElementById("login-form").firstElementChild.addEventListener("submit",async (e)=>await login(e), false);
-  console.log(document.getElementById("login-form").firstElementChild);
+  loginForm = document.getElementById("login-form");
+  createAccountForm = document.getElementById("create-account-form");
+  loginForm.firstElementChild.addEventListener("submit",async (e)=>await login(e), false);
+  loginForm.firstElementChild.lastElementChild.addEventListener("click", (e)=>{
+    e.preventDefault();
+    loginForm.style.display = "none";
+    createAccountForm.style.display = "flex";
+  })
+  createAccountForm.firstElementChild.addEventListener("submit", async (e)=>{createAccount(e)}, false);
+  createAccountForm.firstElementChild.lastElementChild.addEventListener("click", (e)=>{
+    e.preventDefault();
+    loginForm.style.display = "flex";
+    createAccountForm.style.display = "none";
+  })
+
   subscribe = document.getElementById("subscribe");
 }
 
 async function login(e) {
   e.preventDefault();
-  let form = document.getElementById("login-form");
+  let form = loginForm;
   let usernameInput = form.firstElementChild.firstElementChild.value;
   let passwordInput = form.firstElementChild.firstElementChild.nextElementSibling.value;
   console.log(usernameInput, passwordInput);
@@ -68,6 +83,22 @@ async function login(e) {
 
 async function afterLogin() {
   await loadServerButtons();
+}
+
+async function createAccount(e) {
+  e.preventDefault();
+  let form = createAccountForm;
+  let usernameInput = form.firstElementChild.firstElementChild.value;
+  let passwordInput = form.firstElementChild.firstElementChild.nextElementSibling.value;
+  if (usernameInput == "" || passwordInput == "") {
+    form.firstElementChild.firstElementChild.style.borderColor = "red";
+    
+    form.firstElementChild.firstElementChild.nextElementSibling.style.borderColor = "red";
+    return;
+  }
+  invoke("create_account", {username:usernameInput, password:passwordInput}).then((result)=>{
+  }).catch(()=>{
+  })
 }
 
 window.addEventListener("load", onReady, false);

@@ -1,4 +1,6 @@
-#[derive(serde::Serialize)]
+use std::fmt::{self, Formatter};
+
+#[derive(serde::Serialize, Debug, PartialEq)]
 pub enum ResultCode {
     ERROR,
     SUCCESS,
@@ -6,15 +8,22 @@ pub enum ResultCode {
 
 #[derive(serde::Serialize)]
 pub struct OperationResult {
-    content: String,
-    code: ResultCode,
+    pub content: String,
+    pub code: ResultCode,
+}
+
+impl fmt::Debug for OperationResult {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "OperationResult {{ content: {}, code: {:?} }}",
+            self.content, self.code
+        )
+    }
 }
 
 impl OperationResult {
     pub fn new(content: String, code: ResultCode) -> OperationResult {
-        OperationResult {
-            content,
-            code,
-        }
+        OperationResult { content, code }
     }
 }

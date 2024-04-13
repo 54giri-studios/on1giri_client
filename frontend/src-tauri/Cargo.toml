@@ -26,6 +26,10 @@ log = { version = "0.4.21" }
 simple_logger = { version = "4.3.3" }
 dotenv = { version = "0.15" }
 
+[dev-dependencies]
+httpmock = "0.7.0-rc.1"
+
+
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
 # If you use cargo directly instead of tauri's cli you can use this feature flag to switch between tauri's `dev` and `build` modes.

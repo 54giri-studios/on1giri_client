@@ -1,5 +1,4 @@
 use eventsource::reqwest::Client;
-use serde::Serialize;
 use std::collections::HashMap;
 use tauri::{AppHandle, Manager, State};
 use tokio::sync::Mutex;
@@ -40,8 +39,10 @@ fn listen_and_emit_messages(channel_id: i32, app: AppHandle, token: Cancellation
         if token.is_cancelled() {
             break;
         }
-        let message = event.unwrap().data;
-        app.emit_all("new_message", message).unwrap();
+        match event {
+            Ok(message) => app.emit_all("new_message", message.data).unwrap(),
+            Err(_) => ()
+        }
     }
 }
 

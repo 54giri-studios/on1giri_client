@@ -7,7 +7,7 @@ async function get_in_channel(e) {
   e.preventDefault();
   console.log("Call to the subscribe_to_channel api endpoint");
   // The channel id should correspond to the target channel
-  invoke("susbcribe_to_channel", { channelId: 1 });
+  invoke("subscribe", { channelId: 1 });
 }
 
 // The endpoint trigger a new tauri event called new_message

@@ -11,8 +11,9 @@
     </script>
   </head>
   <body id="body">
+    <div id="main-window-wrapper">
     <div id="server-nav">
-      <button id="subscribe" type="button">Subscribe to channel</button>
+      <button id="subscribe" type="button">Join Server</button>
       <script src="ts/Load.js"></script>
       <script src="./ts/LoadServers.js"></script>
       <script src="ts/RecieveMessage.js"></script>
@@ -31,6 +32,7 @@
       <form >
         <input type="text" placeholder="username">
         <input type="text" placeholder="password">
+        <button type="submit">login</button>
       </form>
     </div>
     <div id="convo">
@@ -43,8 +45,5 @@
         <input id="input-message" type="text" placeholder="Type in your message"/>
       </form>
     </div>
-
-    
-
   </body>
 </html>

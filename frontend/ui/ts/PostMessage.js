@@ -6,5 +6,7 @@ async function post_message(e, message) {
         let messageBloc = document.createElement('div');
         messageBloc.innerText = author + ': ' + content;
         chat.appendChild(messageBloc);
+    }).catch((result)=>{
+        console.log(result);
     })
 }

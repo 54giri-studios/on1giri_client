@@ -1,11 +1,6 @@
 body {
-    height: 100vh;
-    display: flex;
-    background-color: rgb(83, 83, 83);
     margin: 0;
-    width: 100%;
-    display: flex;
-    flex-direction:row;
+    border: 0; 
 }
 
 #header {
@@ -13,6 +8,36 @@ body {
     color: aliceblue;
 }
 
+#main-window-wrapper {
+    position: fixed;
+    z-index: 1;
+    height: 100vh;
+    display: flex;
+    background-color: rgb(83, 83, 83);
+    margin: 0;
+    width: 100%;
+    flex-direction:row;
+}
+
+#login-form {
+    display: none;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: 42;
+    background-color: black;
+    justify-content: center;
+}
+
+#login-form > form {
+    display: flex;
+    max-height: 50%;
+    flex-direction: column;
+}
+#login-form > form > input, button {
+    max-height: 20%;
+    font-size:large ;
+}
 #popup {
     background-color: red;
 }

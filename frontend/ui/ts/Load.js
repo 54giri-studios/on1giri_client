@@ -7,6 +7,7 @@ function getCookieValue(name) {
 
 let body;
 let chat;
+let channelMembers;
 let join;
 let servertab;
 let serverchannels;
@@ -18,9 +19,10 @@ let channelId = 0;
 
 function onReady() {
   chat = document.getElementById("convo-chat");
+  channelMembers = document.getElementById("channel-members");
 
   join = document.getElementById("subscribe");
-  join.addEventListener("click", joinInit, false);
+  join.addEventListener("click", joinServer, false);
 
   body = document.getElementById("body");
 
@@ -35,19 +37,23 @@ function onReady() {
     post_message(e, message);
     }, false);
 
-  document.getElementById("login-form").firstChild.addEventListener("submit", async (e)=>login(e), false);
-  
+  document.getElementById("login-form").firstElementChild.addEventListener("submit",async (e)=>await login(e), false);
+  console.log(document.getElementById("login-form").firstElementChild);
   subscribe = document.getElementById("subscribe");
-  loadServerButtons();
 }
 
 async function login(e) {
-  return;
   e.preventDefault();
-  console.log("submitted");
   let form = document.getElementById("login-form");
-  let usernameInput = form.firstChild.value;
-  let passwordInput = form.lastChild.value;
+  let usernameInput = form.firstElementChild.firstElementChild.value;
+  let passwordInput = form.firstElementChild.firstElementChild.nextElementSibling.value;
+  console.log(usernameInput, passwordInput);
+  if (usernameInput == "" || passwordInput == "") {
+    form.firstElementChild.firstElementChild.style.borderColor = "red";
+    
+    form.firstElementChild.firstElementChild.nextElementSibling.style.borderColor = "red";
+    return;
+  }
   invoke("login", {username:usernameInput, password:passwordInput}).then((result)=>{
     document.cookie = "TOKEN="+result.data.token;
     userid = result.userId;
@@ -55,7 +61,6 @@ async function login(e) {
     afterLogin();
   }).catch(()=>{
     form.style.display = "none";
-    console.log(42)
     afterLogin();
     console.log("Failed to login");
   })

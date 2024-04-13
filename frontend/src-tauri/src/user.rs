@@ -9,6 +9,7 @@ pub async fn login(
     // I've concerned about the security of this way of handle login's logic
     // This is boilerplate that should be handle in a safer way
     // TODO
+    println!("Attempting login");
     let endpoint = format!("/login");
 
     let json = {
@@ -52,7 +53,7 @@ pub async fn get_user_info(user_id: i32) -> Result<result::OperationResult, resu
 #[tauri::command]
 pub async fn get_user_guilds(user_id: i32) -> Result<result::OperationResult, result::OperationResult> {
     let endpoint = format!("/user/{}/guilds", user_id);
-
+    println!("Getting user's guilds");
     match utils::build_url(endpoint) {
         Ok(url) => utils::fetch_data(url).await,
         Err(e) => Err(e),

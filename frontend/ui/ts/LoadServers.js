@@ -1,3 +1,7 @@
+let selectedChannel = null;
+let selectedServer = null;
+
+
 async function loadServerButtons() {
     //should call get_servers from rust backend
     let serverid = 1515; //dummy value
@@ -23,12 +27,22 @@ async function loadServerButtons() {
 }
 
 async function loadServerChannels(serverid) {
-    clearChannels();
+    if (selectedServer!=null) {
+        if (selectedServer === document.getElementById("server" + serverid)) {
+            //server was already selected, nothing to do here
+            return;
+        } else {
+            selectedServer = document.getElementById("server" + serverid);
+            clearChannels();
+        }
+    } else {
+        selectedServer = document.getElementById("server" + serverid);
+        clearChannels();
+    }
+    
     let channel = {name: "bite", id:42 }
     let button = document.getElementById("channel" + channel.id);
     if (button == null) {
-        channel_id = 1;
-        console.log("loading")
         button = document.createElement("button");
         button.className = "channel";
         button.textContent = channel.name;
@@ -36,10 +50,12 @@ async function loadServerChannels(serverid) {
         serverchannels.appendChild(button);
         button.addEventListener("click", async (e)=>{
             document.getElementById("convo").style.display = "flex";
-            channelid = channel_id;
-            await loadChannelMessages(e, channel_id);
+            channelMembers.style.display = "flex";
+            channelid = channel.id;
+            await loadChannelMessages(e, channelid);
         }, false);
     }
+    
     invoke("get_guild_channels", {guildId: serverid}).then((result)=>{
         let channelList = result.data;
 
@@ -47,7 +63,6 @@ async function loadServerChannels(serverid) {
             let button = document.getElementById("channel" + channel.id);
             if (button == null) {
                 channel_id = 0;
-                console.log("loading")
                 button = document.createElement("button");
                 button.className = "channel";
                 button.textContent = channel.name;
@@ -56,12 +71,19 @@ async function loadServerChannels(serverid) {
                 button.addEventListener("click", async (e)=>{
                     document.getElementById("convo").style.display = "flex";
                     channelid = channel_id;
-                    await loadChannelMessages(e, channel_id);
+                    if (selectedChannel != null) {
+                        if (selectedChannel === button) {
+
+                        }
+                        await loadChannelMessages(e, channel_id);
+                    } else {
+                        selectedChannel = document.getElementById("channel" + channel.id);
+                        await loadChannelMessages(e, channel_id);
+                    }
                     }, false);
             } else {
                 //channel was already loaded
                 button.style.display = "block";
-                console.log("already loaded");
             }
         }
 
@@ -72,9 +94,33 @@ async function loadServerChannels(serverid) {
 }
 
 async function loadChannelMessages(e, channelid) {
-    // get latest30msg(channelid)
+    if (selectedChannel!=null) {
+        if (selectedChannel === document.getElementById("channel" + channelid)) {
+            //channel was already selected, nothing to do here
+            console.log("already selected");
+            return;
+        } else {
+            selectedChannel = document.getElementById("channel" + channelid);
+            clearMessages();
+            clearChannelUsers();
+        }
+    } else {
+        selectedChannel = document.getElementById("channel" + channelid);
+        clearMessages();
+        clearChannelUsers();
+    }
+
     get_in_channel(e).then(async (response)=>{
         await loadChannelUsers(channelid);
+        invoke("get_latest_messages", {channelId: channelid, amount: 30}).then((result)=>{
+            for (message in result.data) {
+                let author = message.author;
+                let content = message.content;
+                let messageBloc = new Message(author, content).display();
+                messageBloc.id = "message" + message.id;
+                chat.appendChild(messageBloc);
+            }
+        })
         let author = "user0";
         let content = "hello";
         let messageBloc = new Message(author, content).display();
@@ -84,7 +130,19 @@ async function loadChannelMessages(e, channelid) {
 
 
 async function loadChannelUsers(channelid) {
-    
+    channelMembers.textContent = "- Channel Members -";
+    invoke("get_channel_users", {channelId: channelid}).then((result)=>{
+        for (user in result.data) {
+            let userBlock = document.createElement("div");
+            userBlock.textContent = user.name;
+            channelMembers.appendChild(userBlock);
+        }
+    }).catch((response)=>{
+        console.log(response);
+        let userBlock = document.createElement("div");
+        userBlock.textContent = "dummyUser";
+        channelMembers.appendChild(userBlock);
+    })
 }
 
 function clearChannels() {
@@ -93,4 +151,8 @@ function clearChannels() {
 
 function clearMessages() {
     chat.textContent = "";
+}
+
+function clearChannelUsers() {
+    channelMembers.textContent = "- Channel Members -";
 }

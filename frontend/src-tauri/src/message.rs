@@ -31,6 +31,7 @@ pub async fn get_messages(
     message_id: i32,
     amount: i32,
 ) -> Result<result::OperationResult, result::OperationResult> {
+    
     let endpoint = format!("/message/get_amount_prec_messages/{}/{}/{}", channel_id, message_id, amount);
 
     match utils::build_url(endpoint) {
@@ -44,7 +45,7 @@ pub async fn get_latest_messages(
     amount: i32,
 ) -> Result<result::OperationResult, result::OperationResult> {
     let endpoint = format!("/message/get_history_messages/{}/{}", channel_id, amount);
-
+    println!("getting latest{} msgs of channel {}", channel_id, amount);
     match utils::build_url(endpoint) {
         Ok(url) => utils::fetch_data(url).await,
         Err(e) => Err(e),

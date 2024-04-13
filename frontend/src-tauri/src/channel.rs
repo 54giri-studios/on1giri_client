@@ -94,10 +94,10 @@ pub async fn send_message(channel_id: u32, message_content: String) -> Result<re
     
     // WARNING should precise the endpoint
     let url = reqwest::Url::parse(format!("{}/messages/{}", std::env::var("SERVER_URL").ok().unwrap_or(String::from("http://127.0.0.1:8000")), channel_id).as_str()).unwrap();
-    print!("{}", url);
     let client = reqwest::Client::new();
 
     let response = client.post(url)
+        .header("Content-Type", "application/json")
         .body(message)
         .send()
         .await

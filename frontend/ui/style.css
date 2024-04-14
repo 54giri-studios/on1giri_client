@@ -1,8 +1,9 @@
 :root {
+    font-size: 20px;
     --main-color: rgb(0, 48, 97);
     --main-color-transparent: rgb(58, 77, 96, .7);
     --text-input-box-color: rgb(60, 60, 60);
-    --conversations-color: rgb(1, 47, 93);
+    --conversations-color: rgb(0, 33, 66);
     --text-hover-color: rgb(45, 60, 75);
 }
 
@@ -91,9 +92,21 @@ body {
     flex-direction: column;
 }
 
+.server {
+    background-image: url(./blanchard.png);
+    background-size: 100%;
+    font-size: 0;
+    border-radius: 40px;
+    height: 80px;
+    width: 80px;
+    outline: none;
+    border: none;
+    padding: none;
+    left:15px;
+}
 
-input {
-    border: 3px solid var(--text-input-box-color);
+input, textarea {
+    border: 5px solid var(--text-input-box-color);
     margin: 10px;
     background-color: var(--text-input-box-color);
     border-radius: 5px;
@@ -180,7 +193,8 @@ body> div, form {
 }
 
 #convo-chat-wrapper {
-    max-height: 97%;
+    flex-grow: 1;
+    flex-shrink: 1;
     overflow-y: scroll;
 }
 
@@ -206,15 +220,21 @@ body> div, form {
 }
 
 #message-edit {
-    flex-grow: 1;
-    height: 30px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    height:fit-content;
     width: 100%;
+    display: flex;
+    flex-direction: row;
 }
 
-#message-edit > input {
+#message-edit > textarea {
     bottom: 0;
-    position: absolute;
+    flex-grow: 1;
     right: 5px;
     left: 5px;
     margin: 5px;
+    height:28px;
+    resize: none;
+    font-size: 1rem;
 }

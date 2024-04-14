@@ -6,8 +6,8 @@ async function loadServerButtons() {
     //should call get_servers from rust backend
     let serverid = 0; //dummy value
     let button = document.createElement("button");
-    button.className = "server-button";
-    button.textContent = "couille";
+    button.className = "server";
+    button.textContent = "blanchard";
     button.id = "server" + serverid;
     servertab.appendChild(button);
     button.addEventListener("click", ()=> loadServerChannels(serverid));
@@ -16,7 +16,7 @@ async function loadServerButtons() {
         for (server in result.data) {
             let serverid = server.id; //dummy value
             let button = document.createElement("button");
-            button.className = "server-button";
+            button.className = "server";
             button.textContent = server.name;
             button.id = "server" + serverid;
             servertab.appendChild(button);
@@ -41,7 +41,7 @@ async function loadServerChannels(serverid) {
         clearChannels();
     }
     
-    let channel = {name: "bite", id:0 }
+    let channel = {name: "le cours", id:0 }
     let button = document.getElementById("channel" + channel.id);
     if (button == null) {
         button = document.createElement("button");
@@ -98,7 +98,6 @@ async function loadChannelMessages(e, channelid) {
     if (selectedChannel!=null) {
         if (selectedChannel === document.getElementById("channel" + channelid)) {
             //channel was already selected, nothing to do here
-            console.log("already selected");
             return;
         } else {
             selectedChannel = document.getElementById("channel" + channelid);
@@ -121,6 +120,8 @@ async function loadChannelMessages(e, channelid) {
                 messageBloc.id = "message" + message.id;
                 chat.appendChild(messageBloc);
             }
+        }).catch((result)=>{
+            console.log(result);
         })
         let author = "user0";
         let content = "hello";

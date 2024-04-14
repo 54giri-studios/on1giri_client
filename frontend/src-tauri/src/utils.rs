@@ -8,29 +8,14 @@ async fn handle_response(
 
     if call.is_ok() {
         response = call.unwrap();
+        return Ok(result::OperationResult::new(
+            response.text().await.unwrap(),
+            result::ResultCode::SUCCESS,
+        ));
     } else {
         return Err(result::OperationResult::new(String::from("Cannot contact the server, redirect loop was detected or redirect limit was exhausted."), result::ResultCode::ERROR));
     }
 
-
-    match response {
-        r if r.status().is_success() => Ok(result::OperationResult::new(
-            r.text().await.unwrap(),
-            result::ResultCode::SUCCESS,
-        )),
-        r if r.status().is_client_error() => Err(result::OperationResult::new(
-            "Client error, make sure you are connected to the internet".to_string(),
-            result::ResultCode::ERROR,
-        )),
-        r if r.status().is_server_error() => Err(result::OperationResult::new(
-            "Server error, try again later".to_string(),
-            result::ResultCode::ERROR,
-        )),
-        _ => Err(result::OperationResult::new(
-            "Unknown error".to_string(),
-            result::ResultCode::ERROR,
-        )),
-    }
 }
 
 pub fn convert_to_json_str(map: HashMap<&str, String>) -> Result<String, result::OperationResult> {
@@ -43,12 +28,12 @@ pub fn convert_to_json_str(map: HashMap<&str, String>) -> Result<String, result:
     }
 }
 
-pub fn build_url(endpoint: String) -> Result<reqwest::Url, result::OperationResult> {
+pub fn build_url(endpoint: impl Into<String>) -> Result<reqwest::Url, result::OperationResult> {
     let server_url = std::env::var("SERVER_URL")
         .ok()
         .unwrap_or(String::from("http://127.0.0.1:8000"));
 
-    let url = format!("{}{}", server_url, endpoint);
+    let url = format!("{}{}", server_url, endpoint.into());
     let url = reqwest::Url::parse(url.as_str());
 
     match url {

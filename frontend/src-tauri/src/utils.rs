@@ -62,10 +62,15 @@ pub fn build_url(endpoint: String) -> Result<reqwest::Url, result::OperationResu
 
 pub async fn fetch_data(
     url: reqwest::Url,
+    token: impl Into<String>,
 ) -> Result<result::OperationResult, result::OperationResult> {
     let client = reqwest::Client::new();
 
-    let call = client.get(url).send().await;
+    let call = client
+        .get(url)
+        .header("AUTHORIZATION", format!("Bearer {}", token.into()))
+        .send()
+        .await;
 
     handle_response(call).await
 }
@@ -73,12 +78,15 @@ pub async fn fetch_data(
 pub async fn post_server(
     url: reqwest::Url,
     body: String,
+    token: Option<String>,
 ) -> Result<result::OperationResult, result::OperationResult> {
     let client = reqwest::Client::new();
 
-    let call = client.post(url).json(&body).send().await;
-
-    handle_response(call).await
+    let mut call = client.post(url).json(&body);
+    if let Some(tok) = token {
+        call = call.header("AUTHORIZATION", format!("Bearer {}", tok));
+    }
+    handle_response(call.send().await).await
 }
 
 #[cfg(test)]

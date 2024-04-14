@@ -89,18 +89,14 @@ pub async fn subscribe(
 #[tauri::command]
 pub async fn send_message(channel_id: u32, message_content: String) -> Result<result::OperationResult, result::OperationResult> {
     let message = message::Message::new(channel_id, message::MessageType::SEND, message_content);
-
     let message = serde_json::to_string(&message).unwrap();
 
-    //dummy value, message stringification should be fixed to match the json format of the request
-    let message2: String = String::from("{\"channel_id\":0,\"author_id\":0,\"content\":\"azd\"}");
-    // WARNING should precise the endpoint
     let url = reqwest::Url::parse(format!("{}/messages/{}", std::env::var("SERVER_URL").ok().unwrap_or(String::from("http://127.0.0.1:8000")), channel_id).as_str()).unwrap();
     let client = reqwest::Client::new();
 
     let response = client.post(url)
         .header("Content-Type", "application/json")
-        .body(message2)
+        .body(message)
         .send()
         .await
         .unwrap();
@@ -137,12 +133,12 @@ pub async fn send_message(channel_id: u32, message_content: String) -> Result<re
 
 
 #[tauri::command]
-pub async fn get_channel_users(channel_id: i32) -> Result<result::OperationResult, result::OperationResult> {
+pub async fn get_channel_users(channel_id: i32, token: String) -> Result<result::OperationResult, result::OperationResult> {
 
     let endpoint = format!("/channel/{}", channel_id);
 
-    match utils::build_url(endpoint) {
-        Ok(url) => utils::fetch_data(url).await,
+    match utils::build_url(endpoint.as_str()) {
+        Ok(url) => utils::fetch_data(url, token).await,
         Err(e) => Err(e),
     }
 }

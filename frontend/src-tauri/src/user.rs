@@ -7,8 +7,6 @@ pub async fn login(
     password: String
 ) -> Result<result::OperationResult, result::OperationResult> {
 
-    log::info!("Logging in user: {}", username);
-
     let endpoint = format!("/login");
 
     let json = {
@@ -132,7 +130,7 @@ mod test {
         std::env::set_var("SERVER_URL", server.base_url());
 
         let _m = server.mock(|when, then| {
-            when.method(GET).path("/user/create");
+            when.method(POST).path("/user/create");
             then.status(200)
                 .header("Content-Type", "application/json")
                 .body("{ \"token\" : \"fljdasf85425fklhafasflas\" }");
@@ -145,6 +143,28 @@ mod test {
             }
             Err(e) => { panic!("{e:?}"); }
         }
+    }
+
+
+    #[tokio::test]
+    async fn test_login_user() {
+        let server = MockServer::start();
+        std::env::set_var("SERVER_URL", server.base_url());
+
+        let _m = server.mock(|when, then| {
+            when.method(POST).path("/login");
+            then.status(200)
+                .header("Content-Type", "application/json")
+                .body("{ \"token\" : \"fljdasf85425fklhafasflas\" }");
+        });
+ 
+        match login("user".into(), "pass".into()).await {
+            Ok(res) => {
+                assert_eq!(res.code, result::ResultCode::SUCCESS);
+                assert_eq!(res.content, "{ \"token\" : \"fljdasf85425fklhafasflas\" }");
+            }
+            Err(e) => { panic!("{e:?}"); }
+        }       
     }
 
 

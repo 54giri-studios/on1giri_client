@@ -83,7 +83,7 @@ mod test {
     #[test]
     fn correct_url_should_build() {
         let url = build_url("/api/v1/").unwrap();
-        assert_eq!(url.as_str(), "http://127.0.0.1:8000/api/v1/");
+        assert_eq!(url.as_str(), format!("{}{}", std::env::var("SERVER_URL").unwrap(), "/api/v1/"));
     }
 
     #[test]

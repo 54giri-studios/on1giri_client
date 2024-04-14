@@ -64,9 +64,9 @@ async function login(e) {
   let passwordInput = form.firstElementChild.firstElementChild.nextElementSibling.value;
   console.log(usernameInput, passwordInput);
   if (usernameInput == "" || passwordInput == "") {
-    form.firstElementChild.firstElementChild.style.borderColor = "red";
+    form.firstElementChild.firstElementChild.style.outline = "solid";
     
-    form.firstElementChild.firstElementChild.nextElementSibling.style.borderColor = "red";
+    form.firstElementChild.firstElementChild.nextElementSibling.style.outline = "solid";
     return;
   }
   invoke("login", {username:usernameInput, password:passwordInput}).then((result)=>{
@@ -91,9 +91,9 @@ async function createAccount(e) {
   let usernameInput = form.firstElementChild.firstElementChild.value;
   let passwordInput = form.firstElementChild.firstElementChild.nextElementSibling.value;
   if (usernameInput == "" || passwordInput == "") {
-    form.firstElementChild.firstElementChild.style.borderColor = "red";
+    form.firstElementChild.firstElementChild.style.outline = "solid";
     
-    form.firstElementChild.firstElementChild.nextElementSibling.style.borderColor = "red";
+    form.firstElementChild.firstElementChild.nextElementSibling.style.outline = "solid";
     return;
   }
   invoke("create_account", {username:usernameInput, password:passwordInput}).then((result)=>{

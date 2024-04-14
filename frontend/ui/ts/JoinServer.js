@@ -3,7 +3,7 @@ function joinServer(e) {
     e.preventDefault();
     let serverForm = document.getElementById("form-wrapper");
     serverForm.parentElement.style.display = "flex";
-    serverForm.firstElementChild.firstElementChild.style.borderColor = "rgb(80, 80, 80)";
+    serverForm.firstElementChild.firstElementChild.style.outline = "none";
     serverForm.firstElementChild.firstElementChild.value = "";
     //call subscribe to server
     serverForm.firstElementChild.addEventListener("submit", async (e)=>await joinServerSubmit(e), false);
@@ -22,8 +22,7 @@ async function joinServerSubmit(e) {
     let serverForm = document.getElementById("form-wrapper");
     let id = parseInt(serverForm.firstElementChild.firstElementChild.value);
     if (isNaN(id)){
-        console.log("invalid input");
-        serverForm.firstElementChild.firstElementChild.style.borderColor = "red";
+        serverForm.firstElementChild.firstElementChild.style.outline = "solid";
     } else {
         invoke("add_user_to_guild", {guildId: id, userId:0}).then((response) => {
             loadServerButtons();

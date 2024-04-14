@@ -12,58 +12,59 @@
   </head>
   <body id="body">
     <div id="main-window-wrapper">
-    <div id="server-nav">
-      <button id="subscribe" type="button">Join Server</button>
-      <script src="ts/Load.js"></script>
-      <script src="./ts/LoadServers.js"></script>
-      <script src="ts/RecieveMessage.js"></script>
-      <script src="ts/JoinServer.js"></script>
-      <script src="ts/PostMessage.js"></script>
-    </div>
-    <div id="left-pannel">
-      <div id="control-pannel">
-        <img src="blanchard.png">
+      <div id="server-nav">
+        <button id="subscribe" type="button">Join Server</button>
+        <script src="ts/Load.js"></script>
+        <script src="./ts/LoadServers.js"></script>
+        <script src="ts/RecieveMessage.js"></script>
+        <script src="ts/JoinServer.js"></script>
+        <script src="ts/PostMessage.js"></script>
       </div>
-      <div id="channel-list">
-        <div class="channel"></div>
-      </div>
-    </div>
-    <div id="login-form" class="popupForm">
-      <form >
-        <input type="text" placeholder="username">
-        <input type="text" placeholder="password">
-        <button type="submit">login</button>
-        <button type="button">Create Account</button>
-      </form>
-    </div>
-    <div id="create-account-form" class="popupForm">
-      <form >
-        <input type="text" placeholder="username">
-        <input type="text" placeholder="password">
-        <button type="submit">Create Account</button>
-        <button>Go Back</button>
-      </form>
-    </div>
-    <div id="server-join-form" class="popupForm">
-      <div id="form-wrapper">
-        <form >
-          <input type="text" placeholder="server id">
-          <button type="submit">Join</button>
-        </form>
-      </div>
-    </div>
-    <div id="convo">
-      <div id="convo-chat-wrapper">
-        <div id="convo-chat">
-          <h1 id="header">Welcome to 0n1g1r1!</h1>
+      <div id="left-pannel">
+        <div id="control-pannel">
+          
+        </div>
+        <div id="channel-list">
+          <div class="channel"></div>
         </div>
       </div>
-      <form id="message-edit">
-        <input id="input-message" type="text" placeholder="Type in your message"/>
-      </form>
-    </div>
-    <div id="channel-members">
-      - Channel Members -
+      <div id="login-form" class="popupForm">
+        <form >
+          <input type="text" placeholder="username">
+          <input type="text" placeholder="password">
+          <button type="submit">login</button>
+          <button type="button">Create Account</button>
+        </form>
+      </div>
+      <div id="create-account-form" class="popupForm">
+        <form >
+          <input type="text" placeholder="username">
+          <input type="text" placeholder="password">
+          <button type="submit">Create Account</button>
+          <button>Go Back</button>
+        </form>
+      </div>
+      <div id="server-join-form" class="popupForm">
+        <div id="form-wrapper">
+          <form >
+            <input type="text" placeholder="server id">
+            <button type="submit">Join</button>
+          </form>
+        </div>
+      </div>
+      <div id="convo">
+        <div id="convo-chat-wrapper">
+          <div id="convo-chat">
+            <h1 id="header">Welcome to 0n1g1r1!</h1>
+          </div>
+        </div>
+        <form id="message-edit">
+          <textarea id="input-message" type="text" placeholder="Type in your message"></textarea>
+        </form>
+      </div>
+      <div id="channel-members">
+        - Channel Members -
+      </div>
     </div>
   </body>
 </html>

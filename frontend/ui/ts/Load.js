@@ -34,10 +34,25 @@ function onReady() {
   
   message_edit_section = document.getElementById("message-edit");
   message_edit_section.addEventListener('submit', (e) => {
-    let message = message_edit_section.firstElementChild.value;
-    message_edit_section.firstElementChild.value = "";
-    post_message(e, message);
+    e.preventDefault();
+    let messageText = document.getElementById("input-message").value;
+    document.getElementById("input-message").value = "";
+    postMessage(messageText);
     }, false);
+  document.getElementById("input-message").addEventListener("keydown", (e)=>{
+    let elem = document.getElementById("input-message");
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        elem.style.height = "28px";
+        message_edit_section.requestSubmit();
+        return;
+    } 
+    setTimeout(()=>{
+      elem.style.height = "1em";
+      elem.style.height = Math.min(elem.scrollHeight, 10 * 28) + "px";
+    }, 10)
+  }, false)
+
 
   loginForm = document.getElementById("login-form");
   createAccountForm = document.getElementById("create-account-form");
@@ -64,9 +79,9 @@ async function login(e) {
   let passwordInput = form.firstElementChild.firstElementChild.nextElementSibling.value;
   console.log(usernameInput, passwordInput);
   if (usernameInput == "" || passwordInput == "") {
-    form.firstElementChild.firstElementChild.style.borderColor = "red";
+    form.firstElementChild.firstElementChild.style.outline = "solid";
     
-    form.firstElementChild.firstElementChild.nextElementSibling.style.borderColor = "red";
+    form.firstElementChild.firstElementChild.nextElementSibling.style.outline = "solid";
     return;
   }
   invoke("login", {username:usernameInput, password:passwordInput}).then((result)=>{
@@ -91,9 +106,9 @@ async function createAccount(e) {
   let usernameInput = form.firstElementChild.firstElementChild.value;
   let passwordInput = form.firstElementChild.firstElementChild.nextElementSibling.value;
   if (usernameInput == "" || passwordInput == "") {
-    form.firstElementChild.firstElementChild.style.borderColor = "red";
+    form.firstElementChild.firstElementChild.style.outline = "solid";
     
-    form.firstElementChild.firstElementChild.nextElementSibling.style.borderColor = "red";
+    form.firstElementChild.firstElementChild.nextElementSibling.style.outline = "solid";
     return;
   }
   invoke("create_account", {username:usernameInput, password:passwordInput}).then((result)=>{

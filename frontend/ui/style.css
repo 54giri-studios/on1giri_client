@@ -1,8 +1,9 @@
 :root {
-    --main-color: rgb(58, 77, 96);
+    font-size: 20px;
+    --main-color: rgb(0, 48, 97);
     --main-color-transparent: rgb(58, 77, 96, .7);
     --text-input-box-color: rgb(60, 60, 60);
-    --conversations-color: rgb(1, 47, 93);
+    --conversations-color: rgb(0, 33, 66);
     --text-hover-color: rgb(45, 60, 75);
 }
 
@@ -11,6 +12,7 @@ body {
     color: white;
     margin: 0;
     border: 0; 
+    font-size: large;
 }
 
 #header {
@@ -90,12 +92,32 @@ body {
     flex-direction: column;
 }
 
-input {
-    border: 3px solid var(--text-input-box-color);
+.server {
+    background-image: url(./blanchard.png);
+    background-size: 100%;
+    font-size: 0;
+    border-radius: 40px;
+    height: 80px;
+    width: 80px;
+    outline: none;
+    border: none;
+    padding: none;
+    left:15px;
+}
+
+input, textarea {
+    border: 5px solid var(--text-input-box-color);
     margin: 10px;
     background-color: var(--text-input-box-color);
     border-radius: 5px;
     font-size: large;
+    outline-color: red;
+    outline: none;
+    color: white;
+}
+
+input:focus {
+    outline-width: 0;
 }
 
 button {
@@ -106,11 +128,13 @@ button {
 
 
 #server-nav {
-    width: 5%;
+    width: 100px;
     height: 100%;
     color: var(--conversations-color);
     display: flex;
     flex-direction: column;
+    flex-grow: 0;
+    flex-shrink: 0;
 }
 
 body> div, form {
@@ -119,9 +143,11 @@ body> div, form {
 
 #left-pannel {
     float: left;
-    width: 10%;
+    width: 200px;
     position: relative;
     background-color: var(--conversations-color);
+    flex-grow: 0;
+    flex-shrink: 0;
 }
 
 #control-pannel img {
@@ -149,28 +175,33 @@ body> div, form {
     flex-direction: column;
     border: 10px;
     background-color: var(--conversations-color);
+    flex-grow: 0;
+    flex-shrink: 0;
 }
 
 
 /*Main chat section*/
 #convo {
     display: none;
+    flex-shrink: 1;
+    flex-grow: 1;
     justify-content: end;
     flex-direction: column;
     height: 100%;
-    width: 85%;
+    width: auto;
     position: relative;
 }
 
 #convo-chat-wrapper {
-    max-height: 97%;
+    flex-grow: 1;
+    flex-shrink: 1;
     overflow-y: scroll;
 }
 
 #convo-chat {
     padding-bottom: 5px;
     width: 100%;
-    flex-grow: 1;
+    flex-shrink: 1;
     display: flex;
     row-gap: 5px;
     justify-content: end;
@@ -181,6 +212,7 @@ body> div, form {
     width: 100%;
     display: inline-block;
     word-wrap: break-word;
+    word-break: break-word;
 }
 
 #convo-chat>div:hover{
@@ -188,15 +220,21 @@ body> div, form {
 }
 
 #message-edit {
-    flex-grow: 1;
-    height: 30px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    height:fit-content;
     width: 100%;
+    display: flex;
+    flex-direction: row;
 }
 
-#message-edit > input {
+#message-edit > textarea {
     bottom: 0;
-    position: absolute;
+    flex-grow: 1;
     right: 5px;
     left: 5px;
     margin: 5px;
+    height:28px;
+    resize: none;
+    font-size: 1rem;
 }

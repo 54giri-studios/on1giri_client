@@ -27,6 +27,7 @@ class Message {
 
   display() {
     let messageBloc = document.createElement("div");
+    messageBloc.classList.add("message");
     messageBloc.innerText = this.author + ": " + this.content;
     return messageBloc;
   }

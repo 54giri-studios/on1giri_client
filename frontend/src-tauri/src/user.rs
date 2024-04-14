@@ -7,7 +7,7 @@ pub async fn login(
     password: String
 ) -> Result<result::OperationResult, result::OperationResult> {
 
-    let endpoint = format!("/login");
+    let endpoint = format!("/users/login");
 
     let json = {
         let mut map = HashMap::new();
@@ -35,7 +35,7 @@ pub async fn login(
 
 #[tauri::command]
 pub async fn create_user(username: String, email: String, description: String, picture: String) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = "/user/create";
+    let endpoint = "/users/";
 
     let mut body = HashMap::new();
     body.insert("username", username);

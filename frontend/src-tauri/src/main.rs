@@ -20,6 +20,7 @@ fn main() {
         .manage(channel::ChannelState {
             state: Mutex::new(HashMap::new()),
         })
+        .plugin(tauri_plugin_store::Builder::default().build())
         .invoke_handler(tauri::generate_handler![
             channel::subscribe,
             channel::send_message,
@@ -29,6 +30,7 @@ fn main() {
             message::get_messages,
             message::get_latest_messages,
             user::login,
+            user::create_user,
             user::get_user_info,
             user::get_user_guilds
         ])

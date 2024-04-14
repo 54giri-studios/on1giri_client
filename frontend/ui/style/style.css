@@ -4,8 +4,11 @@
     --main-color-transparent: rgb(58, 77, 96, .7);
     --text-input-box-color: rgb(60, 60, 60);
     --conversations-color: rgb(0, 33, 66);
+    --conversations-color-hover: rgb(0, 48, 95);
     --text-hover-color: rgb(45, 60, 75);
 }
+
+
 
 
 body {
@@ -84,7 +87,7 @@ body {
     width: fit-content;
     background-color: var(--conversations-color);
     padding: 10px;
-    border-radius: 5px; 
+    border-radius: 5px;
 }
 
 #form-wrapper > form {
@@ -92,8 +95,17 @@ body {
     flex-direction: column;
 }
 
+
+@keyframes serverHover {
+    from {
+        border-radius: 40px;
+    }
+    to {
+        border-radius: 20px;
+    }
+}
+
 .server {
-    background-image: url(./blanchard.png);
     background-size: 100%;
     font-size: 0;
     border-radius: 40px;
@@ -103,8 +115,33 @@ body {
     border: none;
     padding: none;
     left:15px;
+    transition: border-radius 300ms;
 }
 
+.server:hover {
+    border-radius: 20px;
+}
+
+.channel {
+    width: 95%;
+    display: flex;
+    align-items: center;
+    background-color: var(--conversations-color);
+    border-radius: 5px;
+}
+
+.channel:hover {
+    background-color: var(--conversations-color-hover);
+    border-color: var(--conversations-color);
+}
+
+.channel > button {
+    border: none;
+    width: 100%;
+    color: white;
+    background-color: transparent;
+}
+  
 input, textarea {
     border: 5px solid var(--text-input-box-color);
     margin: 10px;
@@ -133,6 +170,7 @@ button {
     color: var(--conversations-color);
     display: flex;
     flex-direction: column;
+    align-items: center;
     flex-grow: 0;
     flex-shrink: 0;
 }
@@ -160,11 +198,15 @@ body> div, form {
 #control-pannel {
     position: absolute;
     bottom: 0;
-    width: 150px;
+    width: 100%;
 }
 
 #channel-list {
-    width: 150px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    row-gap: 5px;
+    width: 100%;
 }
 
 #channel-members {

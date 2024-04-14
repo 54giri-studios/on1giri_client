@@ -5,6 +5,8 @@ function getCookieValue(name) {
   if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
+
+
 let body;
 let chat;
 let channelMembers;
@@ -111,9 +113,12 @@ async function createAccount(e) {
     form.firstElementChild.firstElementChild.nextElementSibling.style.outline = "solid";
     return;
   }
-  invoke("create_account", {username:usernameInput, password:passwordInput}).then((result)=>{
+  invoke("create_user", {username:usernameInput, email:passwordInput, description:"haha", picture:"velipaka"}).then((result)=>{
   }).catch(()=>{
+    console.log("failed to create account");
   })
+  loginForm.style.display = "flex";
+  createAccountForm.style.display = "none";
 }
 
 window.addEventListener("load", onReady, false);

@@ -46,4 +46,4 @@ WORKDIR /app/src-tauri
 # CMD ["./src-tauri/target/release/app"]
 
 # Run the application for development purpose
-CMD ["cargo", "tauri", "dev"]
+CMD ["cargo", "test", "--", "--test-threads=1"]

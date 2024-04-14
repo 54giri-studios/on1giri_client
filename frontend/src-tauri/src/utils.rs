@@ -82,13 +82,13 @@ mod test {
 
     #[test]
     fn correct_url_should_build() {
-        let url = build_url(String::from("/api/v1/")).unwrap();
+        let url = build_url("/api/v1/").unwrap();
         assert_eq!(url.as_str(), "http://127.0.0.1:8000/api/v1/");
     }
 
     #[test]
     fn incorrect_url_should_not_be_built() {
-        let url = build_url(String::from("http::/127.0.0.1"));
+        let url = build_url("http::/127.0.0.1");
 
         match url {
             Ok(u) => panic!("Should not be able to build url {}", u),
@@ -103,33 +103,39 @@ mod test {
         to_send.insert("age", "20".to_string());
 
         let converted = convert_to_json_str(to_send).unwrap();
-        assert_eq!(converted, String::from("{\"name\":\"John\",\"age\":\"20\"}"));
+        assert!(
+            converted == String::from("{\"name\":\"John\",\"age\":\"20\"}")
+                || converted == String::from("{\"age\":\"20\",\"name\":\"John\"}")
+        );
     }
 
     #[tokio::test]
     async fn good_request_should_return_json_data() {
         let server = MockServer::start();
+        std::env::set_var("SERVER_URL", server.base_url());
 
         let _m = server.mock(|when, then| {
-            when.method(GET).path("/api/v1/");
+            when.method(GET)
+                .path("/api/v1/")
+                .header("AUTHORIZATION", "Bearer testjfhwer90923y45fksajf");
             then.status(200)
                 .header("Content-Type", "application/json")
                 .body("{\"name\": \"John\", \"age\": 20}");
         });
 
-        println!("Server started at {}", server.url("/api/v1/"));
+        println!("{}", server.url("/api/v1/").as_str());
 
         let url = reqwest::Url::parse(server.url("/api/v1/").as_str()).unwrap();
-        let response = fetch_data(url).await;
-
+        let response = fetch_data(url, "testjfhwer90923y45fksajf".to_string()).await;
 
         match response {
             Ok(res) => {
                 assert_eq!(res.code, result::ResultCode::SUCCESS);
                 assert_eq!(res.content, "{\"name\": \"John\", \"age\": 20}");
-            },
-            Err(e) => { eprintln!("{e:?}"); }
+            }
+            Err(e) => {
+                eprintln!("{e:?}");
+            }
         }
-
     }
 }

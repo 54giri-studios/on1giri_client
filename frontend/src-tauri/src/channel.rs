@@ -87,8 +87,8 @@ pub async fn subscribe(
 
 
 #[tauri::command]
-pub async fn send_message(channel_id: u32, message_content: String) -> Result<result::OperationResult, result::OperationResult> {
-    let message = message::Message::new(channel_id, message::MessageType::SEND, message_content);
+pub async fn send_message(channel_id: u32, author_id: u32, content: String) -> Result<result::OperationResult, result::OperationResult> {
+    let message = message::Message::new(channel_id, author_id, content);
     let message = serde_json::to_string(&message).unwrap();
 
     let url = reqwest::Url::parse(format!("{}/messages/{}", std::env::var("SERVER_URL").ok().unwrap_or(String::from("http://127.0.0.1:8000")), channel_id).as_str()).unwrap();

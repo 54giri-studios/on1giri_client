@@ -1,26 +1,18 @@
 use super::*;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
-pub enum MessageType {
-    CONNECT,
-    SEND,
-    QUIT,
-    NONE,
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct Message {
     channel_id: u32,
-    message_type: MessageType,
-    message_content: String,
+    author_id: u32,
+    content: String,
 }
 
 impl Message {
-    pub fn new(channel_id: u32, message_type: MessageType, message_content: String) -> Self {
+    pub fn new(channel_id: u32, author_id: u32, content: String) -> Self {
         Message {
             channel_id,
-            message_type,
-            message_content,
+            author_id,
+            content,
         }
     }
 }

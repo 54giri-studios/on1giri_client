@@ -1,7 +1,7 @@
 async function postMessage(message) {
     
     let author = getCookieValue("username");
-    invoke('send_message', {channelId: channelId, messageContent: message}).then(() => {
+    invoke('send_message', {channelId: channelId, authorId: 0, content: message}).then(() => {
         let content = message;
         let messageBloc = document.createElement('div');
         messageBloc.innerText = author + ': ' + content;

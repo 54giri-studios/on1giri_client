@@ -100,38 +100,20 @@ async function loadServerChannels(serverid) {
     let channelButton = new ChannelButton("Le Cours", 0, ChannelType.text); 
     serverchannels.appendChild(channelButton.display());
     
-    invoke("get_guild_channels", {guildId: serverid}).then((result)=>{
-        let channelList = result.data;
+    invoke("get_guild_channels", {guildId: serverid, token: getCookieValue("TOKEN")}).then((result)=>{
+        let channelList = result.content;
 
+        console.log(result);
         for (channel in channelList) {
             let button = document.getElementById("channel" + channel.id);
             if (button == null) {
-                channel_id = 0;
-                button = document.createElement("button");
-                button.className = "channel";
-                button.textContent = channel.name;
-                button.id = "channel" + channel.id;
-                serverchannels.appendChild(button);
-                button.addEventListener("click", async (e)=>{
-                    document.getElementById("convo").style.display = "flex";
-                    channelid = channel_id;
-                    if (selectedChannel != null) {
-                        if (selectedChannel === button) {
-
-                        }
-                        await loadChannelMessages(e, channel_id);
-                    } else {
-                        selectedChannel = document.getElementById("channel" + channel.id);
-                        await loadChannelMessages(e, channel_id);
-                    }
-                    }, false);
+                let channelElement = new ChannelButton(channel.name, channel.id, channel.kind);
+                serverchannels.appendChild(channelElement.display());
             } else {
                 //channel was already loaded
                 button.style.display = "block";
             }
         }
-
-
     }).catch(()=>{
         console.log("failed to get guild channels");
     });
@@ -155,7 +137,7 @@ async function loadChannelMessages(e, channelid) {
 
     get_in_channel(e).then(async (response)=>{
         await loadChannelUsers(channelid);
-        invoke("get_latest_messages", {channelId: channelid, amount: 30}).then((result)=>{
+        invoke("get_latest_messages", {channelId: channelid, amount: 30, token: getCookieValue("TOKEN")}).then((result)=>{
             for (message in result.data) {
                 let author = message.author;
                 let content = message.content;
@@ -176,7 +158,7 @@ async function loadChannelMessages(e, channelid) {
 
 async function loadChannelUsers(channelid) {
     channelMembers.textContent = "- Channel Members -";
-    invoke("get_channel_users", {channelId: channelid}).then((result)=>{
+    invoke("get_channel_users", {channelId: channelid, token:getCookieValue("TOKEN")}).then((result)=>{
         for (user in result.data) {
             let userBlock = document.createElement("div");
             userBlock.textContent = user.name;

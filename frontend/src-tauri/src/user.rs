@@ -35,7 +35,7 @@ pub async fn login(
 
 #[tauri::command]
 pub async fn create_user(username: String, email: String, description: String, picture: String) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = "/users/";
+    let endpoint = "/users/create";
 
     let mut body = HashMap::new();
     body.insert("username", username);

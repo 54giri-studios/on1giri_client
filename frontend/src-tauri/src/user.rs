@@ -4,7 +4,8 @@ use std::collections::HashMap;
 #[tauri::command]
 pub async fn login(
     username: String,
-    password: String
+    password: String,
+    token: Option<String>,
 ) -> Result<result::OperationResult, result::OperationResult> {
 
     let endpoint = format!("/users/login");
@@ -16,8 +17,8 @@ pub async fn login(
         map
     };
 
-    let body: String;
-    let result = utils::convert_to_json_str(json);
+    let result = serde_urlencoded::to_string(&json);
+
     if result.is_ok() {
         body = result.ok().unwrap();
     } else {
@@ -35,7 +36,7 @@ pub async fn login(
 
 #[tauri::command]
 pub async fn create_user(username: String, email: String, description: String, picture: String) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = "/users/create";
+    let endpoint = "/user/create";
 
     let mut body = HashMap::new();
     body.insert("username", username);
@@ -158,7 +159,7 @@ mod test {
                 .body("{ \"token\" : \"fljdasf85425fklhafasflas\" }");
         });
  
-        match login("user".into(), "pass".into()).await {
+        match login("user".into(), "pass".into(), None).await {
             Ok(res) => {
                 assert_eq!(res.code, result::ResultCode::SUCCESS);
                 assert_eq!(res.content, Some(serde_json::from_str("{ \"token\" : \"fljdasf85425fklhafasflas\" }").unwrap()));

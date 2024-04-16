@@ -3,10 +3,6 @@
     z-index: 42;
 }
 
-#login-form > form {
-    display: flex;
-}
-
 #create-account-form {
     display: none;
     z-index: 42;
@@ -14,4 +10,15 @@
 
 #create-account-form > form{
     display: flex;
+}
+
+#login-form > form {
+    background-color: var(--conversations-color);
+    display: flex;
+    height: fit-content;
+    width: fit-content;
+    flex-direction: column;
+    border-radius: 5px;
+    border: 5px solid var(--conversations-color);
+    z-index: 5;
 }

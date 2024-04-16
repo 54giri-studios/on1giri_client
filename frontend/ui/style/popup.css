@@ -1,24 +1,18 @@
-#server-join-form {
-    display: none;
+.popupForm {
     position: fixed;
     height: 100%;
     width: 100%;
-    background-color: var(--main-color-transparent);
+    background-color: var(--main-color);
     justify-content: center;
     align-items: center;
 }
 
-#form-wrapper {
-    height: fit-content;
-    width: fit-content;
+.popupInnerWrapper {
+    height: 400;
+    width: 500;
     background-color: var(--conversations-color);
     padding: 10px;
     border-radius: 5px;
     animation-name: popupAnimation;
     animation-duration: 1s;
-}
-
-#form-wrapper > form {
-    display: flex;
-    flex-direction: column;
 }

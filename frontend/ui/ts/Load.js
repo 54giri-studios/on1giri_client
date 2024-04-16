@@ -91,11 +91,9 @@ async function login(e) {
     document.cookie = "TOKEN="+result.data.token;
     userid = result.userId;
     form.style.display = "none";
-    console.log(42);
     afterLogin();
   }).catch(()=>{
     document.cookie = "TOKEN=AUHIDUHEZ";
-    console.log(1515);
     form.style.display = "none";
     afterLogin();
     console.log("Failed to login");

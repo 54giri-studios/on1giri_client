@@ -1,14 +1,11 @@
 async function postMessage(message) {
     
-    let author = getCookieValue("username");
     invoke('send_message', {channelId: channelId, authorId: 0, content: message}).then(() => {
-        let content = message;
-        let messageBloc = document.createElement('div');
-        messageBloc.innerText = author + ': ' + content;
-        chat.appendChild(messageBloc);
+        let messageBloc = new Message(message, "14 juillet 1789", "Blanchard", 0); 
+        chat.appendChild(messageBloc.display());
         scrollDown();
     }).catch((result)=>{
-        console.log(result);
+        console.log("failed to post message");
     })
 }
 

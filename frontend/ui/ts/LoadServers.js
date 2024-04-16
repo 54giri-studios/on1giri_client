@@ -103,16 +103,9 @@ async function loadServerChannels(serverid) {
     invoke("get_guild_channels", {guildId: serverid, token: getCookieValue("TOKEN")}).then((result)=>{
         let channelList = result.content;
 
-        console.log(result);
-        for (channel in channelList) {
-            let button = document.getElementById("channel" + channel.id);
-            if (button == null) {
-                let channelElement = new ChannelButton(channel.name, channel.id, channel.kind);
-                serverchannels.appendChild(channelElement.display());
-            } else {
-                //channel was already loaded
-                button.style.display = "block";
-            }
+        for (const channel of channelList) {
+            let channelElement = new ChannelButton(channel.name, channel.id, channel.kind);
+            serverchannels.appendChild(channelElement.display());
         }
     }).catch(()=>{
         console.log("failed to get guild channels");
@@ -138,7 +131,8 @@ async function loadChannelMessages(e, channelid) {
     get_in_channel(e).then(async (response)=>{
         await loadChannelUsers(channelid);
         invoke("get_latest_messages", {channelId: channelid, amount: 30, token: getCookieValue("TOKEN")}).then((result)=>{
-            for (message in result.data) {
+            console.log(result.content);
+            for (message in result.content) {
                 let author = message.author;
                 let content = message.content;
                 let messageBloc = new Message(author, content).display();
@@ -146,11 +140,13 @@ async function loadChannelMessages(e, channelid) {
                 chat.appendChild(messageBloc);
             }
         }).catch((result)=>{
-            console.log(result);
+            console.log("failed to get guild latest messages");
         })
         let messageBloc = new Message("C'est dans le COUUUURS!!!", "14 juillet 1789", "Blanchard", 0); 
         chat.appendChild(messageBloc.display());
-    }).catch((response)=>console.log(response));
+    }).catch((response)=>{
+        console.log("failed to subscribe to channel");
+    });
 }
 
 
@@ -162,8 +158,7 @@ async function loadChannelUsers(channelid) {
             channelMembers.appendChild(userBlock.display());
         }
     }).catch((response)=>{
-        console.log(response);
-        let userBlock = new UserButton("Blanchard", "0", "online", "it's vaugeling time");
+        let userBlock = new UserButton("Blanchard", 0, "online", "it's vaugeling time !!!!!!!!!!!!");
         channelMembers.appendChild(userBlock.display());
     })
 }

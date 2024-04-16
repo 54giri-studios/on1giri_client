@@ -35,8 +35,10 @@ class UserButton {
         username.textContent = this.name;
         let connectionMsg = document.createElement("small");
         connectionMsg.textContent = this.connectionMessage;
+        usernameWrapper.appendChild(username);
+        usernameWrapper.appendChild(connectionMsg);
 
-
+        button.appendChild(usernameWrapper);
         return button;
     }
 

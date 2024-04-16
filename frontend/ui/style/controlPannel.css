@@ -1,0 +1,12 @@
+#control-pannel img {
+    width: 50px;
+    
+    border-radius: 25px;
+
+}
+
+#control-pannel {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}

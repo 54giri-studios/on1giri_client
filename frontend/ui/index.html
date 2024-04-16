@@ -3,22 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/main.css">
+    <link rel="stylesheet" href="style/servers.css">
+    <link rel="stylesheet" href="style/channelList.css">
+    <link rel="stylesheet" href="style/login.css">
+    <link rel="stylesheet" href="style/joinServer.css">
+    <link rel="stylesheet" href="style/controlPannel.css">
+    <link rel="stylesheet" href="style/conversations.css">
+    <link rel="stylesheet" href="style/userList.css">
+    <script src="ts/Load.js"></script>
+    <script src="./ts/LoadServers.js"></script>
+    <script src="ts/RecieveMessage.js"></script>
+    <script src="ts/JoinServer.js"></script>
+    <script src="ts/PostMessage.js"></script>
     <title>Document</title>
     <script>
       const { invoke } = window.__TAURI__.tauri
       const { listen } = window.__TAURI__.event
-    </script>
+      </script>
   </head>
   <body id="body">
     <div id="main-window-wrapper">
       <div id="server-nav">
         <button id="subscribe" type="button">Join Server</button>
-        <script src="ts/Load.js"></script>
-        <script src="./ts/LoadServers.js"></script>
-        <script src="ts/RecieveMessage.js"></script>
-        <script src="ts/JoinServer.js"></script>
-        <script src="ts/PostMessage.js"></script>
       </div>
       <div id="left-pannel">
         <div id="control-pannel">

@@ -1,0 +1,69 @@
+input, textarea {
+    border: 5px solid var(--text-input-box-color);
+    margin: 10px;
+    background-color: var(--text-input-box-color);
+    border-radius: 5px;
+    font-size: large;
+    outline-color: red;
+    outline: none;
+    color: white;
+}
+
+
+#convo {
+    display: none;
+    flex-shrink: 1;
+    flex-grow: 1;
+    justify-content: end;
+    flex-direction: column;
+    height: 100%;
+    width: auto;
+    position: relative;
+}
+
+#convo-chat-wrapper {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow-y: scroll;
+}
+
+#convo-chat {
+    padding-bottom: 5px;
+    width: 100%;
+    flex-shrink: 1;
+    display: flex;
+    row-gap: 5px;
+    justify-content: end;
+    flex-direction: column;
+}
+
+#convo-chat>div {
+    width: 100%;
+    display: inline-block;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+#convo-chat>div:hover{
+    background-color: var(--text-hover-color);
+}
+
+#message-edit {
+    flex-grow: 0;
+    flex-shrink: 0;
+    height:fit-content;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+#message-edit > textarea {
+    bottom: 0;
+    flex-grow: 1;
+    right: 5px;
+    left: 5px;
+    margin: 5px;
+    height:28px;
+    resize: none;
+    font-size: 1rem;
+}

@@ -1,0 +1,27 @@
+.channel {
+    width: 95%;
+    display: flex;
+    align-items: center;
+    background-color: var(--conversations-color);
+    border-radius: 5px;
+}
+
+.channel:hover {
+    background-color: var(--conversations-color-hover);
+    border-color: var(--conversations-color);
+}
+
+.channel > button {
+    border: none;
+    width: 100%;
+    color: white;
+    background-color: transparent;
+}
+
+#channel-list {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    row-gap: 5px;
+    width: 100%;
+}

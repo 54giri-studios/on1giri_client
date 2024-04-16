@@ -1,0 +1,59 @@
+:root {
+    font-size: 20px;
+    --main-color: rgb(0, 48, 97);
+    --main-color-transparent: rgb(58, 77, 96, .7);
+    --text-input-box-color: rgb(60, 60, 60);
+    --conversations-color: rgb(0, 33, 66);
+    --conversations-color-hover: rgb(0, 48, 95);
+    --text-hover-color: rgb(45, 60, 75);
+}
+
+
+
+
+body {
+    color: white;
+    margin: 0;
+    border: 0; 
+    font-size: large;
+}
+
+#header {
+    background-color: rgb(53, 53, 53);
+    color: aliceblue;
+}
+
+#main-window-wrapper {
+    position: fixed;
+    z-index: 1;
+    height: 100vh;
+    display: flex;
+    background-color: var(--main-color);
+    margin: 0;
+    width: 100%;
+    flex-direction:row;
+}
+
+
+input:focus {
+    outline-width: 0;
+}
+
+button {
+    line-height: 1;
+    height: max-content;
+    font-size: larger;
+}
+
+body> div, form {
+    height: 100%;
+}
+
+#left-pannel {
+    float: left;
+    width: 200px;
+    position: relative;
+    background-color: var(--conversations-color);
+    flex-grow: 0;
+    flex-shrink: 0;
+}

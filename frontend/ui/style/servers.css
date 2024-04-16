@@ -1,0 +1,36 @@
+@keyframes serverHover {
+    from {
+        border-radius: 40px;
+    }
+    to {
+        border-radius: 20px;
+    }
+}
+
+.server {
+    background-size: 100%;
+    font-size: 0;
+    border-radius: 40px;
+    height: 80px;
+    width: 80px;
+    outline: none;
+    border: none;
+    padding: none;
+    left:15px;
+    transition: border-radius 300ms;
+}
+
+.server:hover {
+    border-radius: 20px;
+}
+
+#server-nav {
+    width: 100px;
+    height: 100%;
+    color: var(--conversations-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 0;
+    flex-shrink: 0;
+}

@@ -1,0 +1,44 @@
+.popupForm {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    background-color: var(--main-color);
+    justify-content: center;
+    align-items: center;
+}
+
+.popupForm > form {
+    background-color: var(--conversations-color);
+    display: flex;
+    height: fit-content;
+    width: fit-content;
+    flex-direction: column;
+    border-radius: 5px;
+    border: 5px solid var(--conversations-color);
+}
+
+
+
+#server-join-form {
+    display: none;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: 5;
+    background-color: var(--main-color-transparent);
+    justify-content: center;
+    align-items: center;
+}
+
+#form-wrapper {
+    height: fit-content;
+    width: fit-content;
+    background-color: var(--conversations-color);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#form-wrapper > form {
+    display: flex;
+    flex-direction: column;
+}

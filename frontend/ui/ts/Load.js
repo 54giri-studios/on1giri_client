@@ -87,12 +87,12 @@ async function login(e) {
     return;
   }
   invoke("login", {username:usernameInput, password:passwordInput}).then((result)=>{
-    document.cookie = "TOKEN=IUHAZD";
+    document.cookie = "TOKEN="+result.data.token;
     userid = result.userId;
     form.style.display = "none";
     afterLogin();
   }).catch(()=>{
-    document.cookie = "TOKEN="+result.data.token;
+    document.cookie = "TOKEN=AUHIDUHEZ";
     form.style.display = "none";
     afterLogin();
     console.log("Failed to login");

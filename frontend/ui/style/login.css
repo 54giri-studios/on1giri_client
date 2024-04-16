@@ -1,0 +1,17 @@
+#login-form {
+    display: flex;
+    z-index: 42;
+}
+
+#login-form > form {
+    display: flex;
+}
+
+#create-account-form {
+    display: none;
+    z-index: 42;
+}
+
+#create-account-form > form{
+    display: flex;
+}

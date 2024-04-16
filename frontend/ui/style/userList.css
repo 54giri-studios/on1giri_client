@@ -1,0 +1,12 @@
+
+#channel-members {
+    width: 200px;
+    text-align: center;
+    display: none;
+    justify-content: flex-start;
+    flex-direction: column;
+    border: 10px;
+    background-color: var(--conversations-color);
+    flex-grow: 0;
+    flex-shrink: 0;
+}

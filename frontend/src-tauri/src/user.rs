@@ -7,7 +7,7 @@ pub async fn login(
     password: String,
     token: Option<String>,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = format!("/users/login");
+    let endpoint = format!("/login");
 
     let json = {
         let mut map = HashMap::new();
@@ -206,4 +206,35 @@ mod test {
             }
         }
     }
+
+
+    #[tokio::test]
+    async fn test_login_user_with_wrong_url() {
+        let server = MockServer::start();
+        std::env::set_var("SERVER_URL", server.base_url());
+
+        let _m = server.mock(|when, then| {
+            when.method(POST).path("/login/poulet");
+            then.status(200)
+                .header("Content-Type", "application/json")
+                .body("{ \"token\" : \"fljdasf85425fklhafasflas\" }");
+        });
+
+        match login("user".into(), "pass".into(), None).await {
+            Err(res) => {
+                assert_eq!(res.code, result::ResultCode::ERROR);
+                assert_eq!(
+                    res.error_msg,
+                    Some(
+                        "Client error: verify your request".to_string()
+                    )
+                );
+            }
+            Ok(e) => {
+                panic!("{e:?}");
+            }
+        }
+    }
+
+
 }

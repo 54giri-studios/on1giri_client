@@ -143,14 +143,14 @@ pub async fn send_message(
             return Err(result::OperationResult::new(
                 None,
                 result::ResultCode::ERROR,
-                Some("Server error".to_string()),
+                Some("Internal server error".to_string()),
             ));
         }
         r if r.status().is_client_error() => {
             return Err(result::OperationResult::new(
                 None,
                 result::ResultCode::ERROR,
-                Some("Client error".to_string()),
+                Some("Client error: verify your request".to_string()),
             ));
         }
         _ => {

@@ -9,15 +9,36 @@ async fn handle_response(
     if call.is_ok() {
         response = call.unwrap();
 
-        match response.text().await {
-            Ok(text) => Ok(result::OperationResult::new(
-                Some(serde_json::from_str(text.as_str()).unwrap()),
-                result::ResultCode::SUCCESS,
-                None,
-            )),
-            Err(e) => Err(result::OperationResult::new(None, result::ResultCode::ERROR, Some(e.to_string())))
+        match &response {
+            r if r.status().is_success() => {
+                return Ok(result::OperationResult::new(
+                    Some(serde_json::from_str(response.text().await.unwrap().as_str()).unwrap()),
+                    result::ResultCode::SUCCESS,
+                    None,
+                ));
+            }
+            r if r.status().is_server_error() => {
+                return Err(result::OperationResult::new(
+                    None,
+                    result::ResultCode::ERROR,
+                    Some("Internal server error".to_string()),
+                ));
+            }
+            r if r.status().is_client_error() => {
+                return Err(result::OperationResult::new(
+                    None,
+                    result::ResultCode::ERROR,
+                    Some("Client error: verify your request".to_string()),
+                ));
+            }
+            _ => {
+                return Err(result::OperationResult::new(
+                    None,
+                    result::ResultCode::ERROR,
+                    Some("Unknown error".to_string()),
+                ));
+            }
         }
-
     } else {
         return Err(result::OperationResult::new(None, result::ResultCode::ERROR, Some(String::from("Cannot contact the server, redirect loop was detected or redirect limit was exhausted."))));
     }
@@ -29,24 +50,27 @@ pub fn convert_to_json_str(map: HashMap<&str, String>) -> Result<String, result:
         Err(_) => Err(result::OperationResult::new(
             None,
             result::ResultCode::ERROR,
-            Some(String::from("Error in data, could not be parse into json string")),
+            Some(String::from(
+                "Error in data, could not be parse into json string",
+            )),
         )),
     }
 }
 
-pub fn convert_to_urlencoded_str(map: HashMap<&str, String>) -> Result<String, result::OperationResult> {
+pub fn convert_to_urlencoded_str(
+    map: HashMap<&str, String>,
+) -> Result<String, result::OperationResult> {
     match serde_urlencoded::to_string(&map) {
         Ok(body) => Ok(body),
         Err(_) => Err(result::OperationResult::new(
             None,
             result::ResultCode::ERROR,
-            Some(String::from("Error in data, could not be parse into urlencoded type")),
+            Some(String::from(
+                "Error in data, could not be parse into urlencoded type",
+            )),
         )),
     }
 }
-
-
-
 
 pub fn build_url(endpoint: impl Into<String>) -> Result<reqwest::Url, result::OperationResult> {
     let server_url = std::env::var("SERVER_URL")
@@ -155,7 +179,10 @@ mod test {
         match response {
             Ok(res) => {
                 assert_eq!(res.code, result::ResultCode::SUCCESS);
-                assert_eq!(res.content, Some(serde_json::from_str("{\"name\": \"John\", \"age\": 20}").unwrap()));
+                assert_eq!(
+                    res.content,
+                    Some(serde_json::from_str("{\"name\": \"John\", \"age\": 20}").unwrap())
+                );
             }
             Err(e) => {
                 eprintln!("{e:?}");

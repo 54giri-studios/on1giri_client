@@ -7,7 +7,6 @@ pub async fn login(
     password: String,
     token: Option<String>,
 ) -> Result<result::OperationResult, result::OperationResult> {
-
     let endpoint = format!("/users/login");
 
     let json = {
@@ -19,10 +18,15 @@ pub async fn login(
 
     let result = serde_urlencoded::to_string(&json);
 
+    let body;
     if result.is_ok() {
         body = result.ok().unwrap();
     } else {
-        return Err(result.err().unwrap());
+        return Err(result::OperationResult::new(
+            None,
+            result::ResultCode::ERROR,
+            Some(result.err().unwrap().to_string()),
+        ));
     }
 
     let result = match utils::build_url(endpoint) {
@@ -33,9 +37,13 @@ pub async fn login(
     return result;
 }
 
-
 #[tauri::command]
-pub async fn create_user(username: String, email: String, description: String, picture: String) -> Result<result::OperationResult, result::OperationResult> {
+pub async fn create_user(
+    username: String,
+    email: String,
+    description: String,
+    picture: String,
+) -> Result<result::OperationResult, result::OperationResult> {
     let endpoint = "/user/create";
 
     let mut body = HashMap::new();
@@ -47,16 +55,22 @@ pub async fn create_user(username: String, email: String, description: String, p
     if let Ok(body) = utils::convert_to_json_str(body) {
         match utils::build_url(endpoint) {
             Ok(u) => utils::post_server(u, body, None).await,
-            Err(e) => Err(e)
+            Err(e) => Err(e),
         }
     } else {
-        return Err(result::OperationResult::new(None, result::ResultCode::ERROR, Some("Cannot convert these values to json string".to_string())));
+        return Err(result::OperationResult::new(
+            None,
+            result::ResultCode::ERROR,
+            Some("Cannot convert these values to json string".to_string()),
+        ));
     }
 }
 
-
 #[tauri::command]
-pub async fn get_user_info(user_id: i32, token: String) -> Result<result::OperationResult, result::OperationResult> {
+pub async fn get_user_info(
+    user_id: i32,
+    token: String,
+) -> Result<result::OperationResult, result::OperationResult> {
     let endpoint = format!("/user/{}", user_id);
 
     match utils::build_url(endpoint) {
@@ -66,7 +80,10 @@ pub async fn get_user_info(user_id: i32, token: String) -> Result<result::Operat
 }
 
 #[tauri::command]
-pub async fn get_user_guilds(user_id: i32, token: String) -> Result<result::OperationResult, result::OperationResult> {
+pub async fn get_user_guilds(
+    user_id: i32,
+    token: String,
+) -> Result<result::OperationResult, result::OperationResult> {
     let endpoint = format!("/user/{}/guilds", user_id);
     match utils::build_url(endpoint) {
         Ok(url) => utils::fetch_data(url, token).await,
@@ -74,12 +91,10 @@ pub async fn get_user_guilds(user_id: i32, token: String) -> Result<result::Oper
     }
 }
 
-
 #[cfg(test)]
 mod test {
     use super::*;
     use httpmock::prelude::*;
-
 
     #[tokio::test]
     async fn should_retrieve_user_guilds_if_exists() {
@@ -97,11 +112,12 @@ mod test {
             Ok(res) => {
                 assert_eq!(res.code, result::ResultCode::SUCCESS);
                 assert_eq!(res.content, Some(serde_json::from_str("{ \"guilds\": [ { \"id\": 1, \"name\": \"Guild 1\" }, { \"id\": 2, \"name\": \"Guild 2\" } ] }").unwrap()));
-            },
-            Err(e) => { panic!("{e:?}"); }
+            }
+            Err(e) => {
+                panic!("{e:?}");
+            }
         }
     }
-
 
     #[tokio::test]
     async fn should_retrieve_user_info_if_exists() {
@@ -114,19 +130,20 @@ mod test {
                 .header("Content-Type", "application/json")
                 .body("{ \"id\": 1, \"username\": \"test\", \"email\": \"user@gmail.com\"}");
         });
-        
+
         match get_user_info(1, String::from("fldjsafkljsadlkfj29527u5")).await {
             Ok(res) => {
                 assert_eq!(res.code, result::ResultCode::SUCCESS);
                 assert!(res.content == Some(serde_json::from_str("{ \"id\": 1, \"username\": \"test\", \"email\": \"user@gmail.com\"}").unwrap()));
             }
-            Err(e) => { panic!("{e:?}"); }
+            Err(e) => {
+                panic!("{e:?}");
+            }
         }
     }
 
-
     #[tokio::test]
-    async fn should_create_user(){
+    async fn should_create_user() {
         let server = MockServer::start();
         std::env::set_var("SERVER_URL", server.base_url());
 
@@ -137,15 +154,29 @@ mod test {
                 .body("{ \"token\" : \"fljdasf85425fklhafasflas\" }");
         });
 
-        match create_user("username".into(), "user@gmail.com".into(), "Etudiant en info".into(), "user23457525.png".into()).await {
+        match create_user(
+            "username".into(),
+            "user@gmail.com".into(),
+            "Etudiant en info".into(),
+            "user23457525.png".into(),
+        )
+        .await
+        {
             Ok(res) => {
                 assert_eq!(res.code, result::ResultCode::SUCCESS);
-                assert_eq!(res.content, Some(serde_json::from_str("{ \"token\" : \"fljdasf85425fklhafasflas\" }").unwrap()));
+                assert_eq!(
+                    res.content,
+                    Some(
+                        serde_json::from_str("{ \"token\" : \"fljdasf85425fklhafasflas\" }")
+                            .unwrap()
+                    )
+                );
             }
-            Err(e) => { panic!("{e:?}"); }
+            Err(e) => {
+                panic!("{e:?}");
+            }
         }
     }
-
 
     #[tokio::test]
     async fn test_login_user() {
@@ -158,15 +189,21 @@ mod test {
                 .header("Content-Type", "application/json")
                 .body("{ \"token\" : \"fljdasf85425fklhafasflas\" }");
         });
- 
+
         match login("user".into(), "pass".into(), None).await {
             Ok(res) => {
                 assert_eq!(res.code, result::ResultCode::SUCCESS);
-                assert_eq!(res.content, Some(serde_json::from_str("{ \"token\" : \"fljdasf85425fklhafasflas\" }").unwrap()));
+                assert_eq!(
+                    res.content,
+                    Some(
+                        serde_json::from_str("{ \"token\" : \"fljdasf85425fklhafasflas\" }")
+                            .unwrap()
+                    )
+                );
             }
-            Err(e) => { panic!("{e:?}"); }
-        }       
+            Err(e) => {
+                panic!("{e:?}");
+            }
+        }
     }
-
-
 }

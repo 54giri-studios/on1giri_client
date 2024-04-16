@@ -22,7 +22,7 @@ RUN apt-get install -y nodejs
 
 
 # Install Rust 1.70
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain 1.74.0
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 
 ENV PATH="/root/.cargo/bin:${PATH}"
 

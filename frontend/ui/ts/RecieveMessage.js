@@ -19,25 +19,10 @@ async function get_in_channel(e) {
 // Modify it to the needs
 
 
-class Message {
-  constructor(author, content) {
-    this.author = author;
-    this.content = content;
-  }
-
-  display() {
-    let messageBloc = document.createElement("div");
-    messageBloc.classList.add("message");
-    messageBloc.innerText = this.author + ": " + this.content;
-    return messageBloc;
-  }
-}
-
-
-
 async function display_message(msg) {
   let author = msg.author;
   let content = msg.message;
-  let messageBloc = new Message(author, content).display();
+  let date = "14 juillet 1789";
+  let messageBloc = new Message(content, date, author, 0).display();
   chat.appendChild(messageBloc);
 }

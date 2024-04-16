@@ -72,6 +72,10 @@ function onReady() {
   })
 
   subscribe = document.getElementById("subscribe");
+  
+  /*to be removed after rust login is fixed*/
+  document.cookie = "TOKEN=AUHIDUHEZ";
+  afterLogin();
 }
 
 async function login(e) {
@@ -79,7 +83,6 @@ async function login(e) {
   let form = loginForm;
   let usernameInput = form.firstElementChild.firstElementChild.value;
   let passwordInput = form.firstElementChild.firstElementChild.nextElementSibling.value;
-  console.log(usernameInput, passwordInput);
   if (usernameInput == "" || passwordInput == "") {
     form.firstElementChild.firstElementChild.style.outline = "solid";
     
@@ -90,9 +93,11 @@ async function login(e) {
     document.cookie = "TOKEN="+result.data.token;
     userid = result.userId;
     form.style.display = "none";
+    console.log(42);
     afterLogin();
   }).catch(()=>{
     document.cookie = "TOKEN=AUHIDUHEZ";
+    console.log(1515);
     form.style.display = "none";
     afterLogin();
     console.log("Failed to login");

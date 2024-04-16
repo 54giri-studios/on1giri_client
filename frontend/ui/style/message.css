@@ -1,0 +1,35 @@
+.message {
+    width: 100%;
+    height: fit-content;
+    display: inline-block;
+    word-wrap: break-word;
+    word-break: break-word;
+    display: flex;
+    flex-direction: column;
+}
+
+.messageMetadata {
+    display: flex;
+    flex-direction: row;
+    justify-content:flex-start;
+}
+
+.messageContent {
+
+}
+
+.username {
+
+}
+
+.username:hover {
+    text-decoration: underline;
+}
+
+.date {
+    color: var(--unimportant-text-color);
+}
+
+.date:hover {
+
+}

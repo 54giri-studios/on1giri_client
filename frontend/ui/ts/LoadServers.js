@@ -148,10 +148,8 @@ async function loadChannelMessages(e, channelid) {
         }).catch((result)=>{
             console.log(result);
         })
-        let author = "user0";
-        let content = "hello";
-        let messageBloc = new Message(author, content).display();
-        chat.appendChild(messageBloc);
+        let messageBloc = new Message("C'est dans le COUUUURS!!!", "14 juillet 1789", "Blanchard", 0); 
+        chat.appendChild(messageBloc.display());
     }).catch((response)=>console.log(response));
 }
 
@@ -159,16 +157,14 @@ async function loadChannelMessages(e, channelid) {
 async function loadChannelUsers(channelid) {
     channelMembers.textContent = "- Channel Members -";
     invoke("get_channel_users", {channelId: channelid, token:getCookieValue("TOKEN")}).then((result)=>{
-        for (user in result.data) {
-            let userBlock = document.createElement("div");
-            userBlock.textContent = user.name;
-            channelMembers.appendChild(userBlock);
+        for (user in result.content) {
+            let userBlock = new UserButton(user.name, user.id, user.connectionStatus, user.connectionMessage);
+            channelMembers.appendChild(userBlock.display());
         }
     }).catch((response)=>{
         console.log(response);
-        let userBlock = document.createElement("div");
-        userBlock.textContent = "dummyUser";
-        channelMembers.appendChild(userBlock);
+        let userBlock = new UserButton("Blanchard", "0", "online", "it's vaugeling time");
+        channelMembers.appendChild(userBlock.display());
     })
 }
 

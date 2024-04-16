@@ -5,6 +5,7 @@
     background-color: var(--main-color);
     justify-content: center;
     align-items: center;
+    z-index: 5;
 }
 
 .popupInnerWrapper {

@@ -28,6 +28,15 @@ class UserButton {
         let button = document.createElement("div");
         button.className = "userButton";
         button.addEventListener("click", this.displayBanner, false);
+
+        let usernameWrapper = document.createElement("div");
+        usernameWrapper.className = "usernameWrapper";
+        let username = document.createElement("p");
+        username.textContent = this.name;
+        let connectionMsg = document.createElement("small");
+        connectionMsg.textContent = this.connectionMessage;
+
+
         return button;
     }
 

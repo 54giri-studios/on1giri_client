@@ -49,7 +49,7 @@ pub async fn create_user(username: String, email: String, description: String, p
             Err(e) => Err(e)
         }
     } else {
-        return Err(result::OperationResult::new("Cannot convert these values to json string".to_string(), result::ResultCode::ERROR));
+        return Err(result::OperationResult::new(None, result::ResultCode::ERROR, Some("Cannot convert these values to json string".to_string())));
     }
 }
 
@@ -95,7 +95,7 @@ mod test {
         match get_user_guilds(1, "flkdjsalfkjsdlfk2857625".into()).await {
             Ok(res) => {
                 assert_eq!(res.code, result::ResultCode::SUCCESS);
-                assert_eq!(res.content, "{ \"guilds\": [ { \"id\": 1, \"name\": \"Guild 1\" }, { \"id\": 2, \"name\": \"Guild 2\" } ] }");
+                assert_eq!(res.content, Some(serde_json::from_str("{ \"guilds\": [ { \"id\": 1, \"name\": \"Guild 1\" }, { \"id\": 2, \"name\": \"Guild 2\" } ] }").unwrap()));
             },
             Err(e) => { panic!("{e:?}"); }
         }
@@ -117,7 +117,7 @@ mod test {
         match get_user_info(1, String::from("fldjsafkljsadlkfj29527u5")).await {
             Ok(res) => {
                 assert_eq!(res.code, result::ResultCode::SUCCESS);
-                assert!(res.content == "{ \"id\": 1, \"username\": \"test\", \"email\": \"user@gmail.com\"}");
+                assert!(res.content == Some(serde_json::from_str("{ \"id\": 1, \"username\": \"test\", \"email\": \"user@gmail.com\"}").unwrap()));
             }
             Err(e) => { panic!("{e:?}"); }
         }
@@ -139,7 +139,7 @@ mod test {
         match create_user("username".into(), "user@gmail.com".into(), "Etudiant en info".into(), "user23457525.png".into()).await {
             Ok(res) => {
                 assert_eq!(res.code, result::ResultCode::SUCCESS);
-                assert_eq!(res.content, "{ \"token\" : \"fljdasf85425fklhafasflas\" }");
+                assert_eq!(res.content, Some(serde_json::from_str("{ \"token\" : \"fljdasf85425fklhafasflas\" }").unwrap()));
             }
             Err(e) => { panic!("{e:?}"); }
         }
@@ -161,7 +161,7 @@ mod test {
         match login("user".into(), "pass".into()).await {
             Ok(res) => {
                 assert_eq!(res.code, result::ResultCode::SUCCESS);
-                assert_eq!(res.content, "{ \"token\" : \"fljdasf85425fklhafasflas\" }");
+                assert_eq!(res.content, Some(serde_json::from_str("{ \"token\" : \"fljdasf85425fklhafasflas\" }").unwrap()));
             }
             Err(e) => { panic!("{e:?}"); }
         }       

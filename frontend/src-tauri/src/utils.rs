@@ -9,21 +9,22 @@ async fn handle_response(
     if call.is_ok() {
         response = call.unwrap();
         return Ok(result::OperationResult::new(
-            response.text().await.unwrap(),
+            Some(serde_json::from_str(response.text().await.unwrap().as_str()).unwrap()),
             result::ResultCode::SUCCESS,
+            None,
         ));
     } else {
-        return Err(result::OperationResult::new(String::from("Cannot contact the server, redirect loop was detected or redirect limit was exhausted."), result::ResultCode::ERROR));
+        return Err(result::OperationResult::new(None, result::ResultCode::ERROR, Some(String::from("Cannot contact the server, redirect loop was detected or redirect limit was exhausted."))));
     }
-
 }
 
 pub fn convert_to_json_str(map: HashMap<&str, String>) -> Result<String, result::OperationResult> {
     match serde_json::to_string(&map) {
         Ok(body) => Ok(body),
         Err(_) => Err(result::OperationResult::new(
-            String::from("Error in data, could not be parse"),
+            None,
             result::ResultCode::ERROR,
+            Some(String::from("Error in data, could not be parse")),
         )),
     }
 }
@@ -39,8 +40,9 @@ pub fn build_url(endpoint: impl Into<String>) -> Result<reqwest::Url, result::Op
     match url {
         Ok(u) => Ok(u),
         Err(_) => Err(result::OperationResult::new(
-            String::from("Bad url format"),
+            None,
             result::ResultCode::ERROR,
+            Some(String::from("Bad url format")),
         )),
     }
 }
@@ -83,7 +85,10 @@ mod test {
     #[test]
     fn correct_url_should_build() {
         let url = build_url("/api/v1/").unwrap();
-        assert_eq!(url.as_str(), format!("{}{}", std::env::var("SERVER_URL").unwrap(), "/api/v1/"));
+        assert_eq!(
+            url.as_str(),
+            format!("{}{}", std::env::var("SERVER_URL").unwrap(), "/api/v1/")
+        );
     }
 
     #[test]
@@ -131,7 +136,7 @@ mod test {
         match response {
             Ok(res) => {
                 assert_eq!(res.code, result::ResultCode::SUCCESS);
-                assert_eq!(res.content, "{\"name\": \"John\", \"age\": 20}");
+                assert_eq!(res.content, Some(serde_json::from_str("{\"name\": \"John\", \"age\": 20}").unwrap()));
             }
             Err(e) => {
                 eprintln!("{e:?}");

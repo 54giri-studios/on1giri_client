@@ -8,7 +8,8 @@ pub enum ResultCode {
 
 #[derive(serde::Serialize)]
 pub struct OperationResult {
-    pub content: String,
+    pub error_msg: Option<String>,
+    pub content: Option<serde_json::Value>,
     pub code: ResultCode,
 }
 
@@ -16,14 +17,22 @@ impl fmt::Debug for OperationResult {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "OperationResult {{ content: {}, code: {:?} }}",
-            self.content, self.code
+            "OperationResult {{ content: {:?}, code: {:?}, error_msg: {:?} }}",
+            self.content, self.code, self.error_msg,
         )
     }
 }
 
 impl OperationResult {
-    pub fn new(content: String, code: ResultCode) -> OperationResult {
-        OperationResult { content, code }
+    pub fn new(
+        content: Option<serde_json::Value>,
+        code: ResultCode,
+        error_msg: Option<String>,
+    ) -> OperationResult {
+        OperationResult {
+            content,
+            code,
+            error_msg,
+        }
     }
 }

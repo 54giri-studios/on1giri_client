@@ -1,9 +1,9 @@
+use super::*;
 use eventsource::reqwest::Client;
 use std::collections::HashMap;
 use tauri::{AppHandle, Manager, State};
 use tokio::sync::Mutex;
 use tokio_util::sync::CancellationToken;
-use super::*;
 
 // Struct that will store the Cancellationtokens
 // corresponding to the different channels that the client
@@ -29,9 +29,17 @@ fn verify_user_isnt_listening(
 }
 
 fn listen_and_emit_messages(channel_id: i32, app: AppHandle, token: CancellationToken) {
-    let url =
-        reqwest::Url::parse(format!("{}/subscribe/{}", std::env::var("SERVER_URL").ok().unwrap_or(String::from("http://127.0.0.1:8000")), channel_id).as_str())
-            .unwrap();
+    let url = reqwest::Url::parse(
+        format!(
+            "{}/subscribe/{}",
+            std::env::var("SERVER_URL")
+                .ok()
+                .unwrap_or(String::from("http://127.0.0.1:8000")),
+            channel_id
+        )
+        .as_str(),
+    )
+    .unwrap();
 
     let client = Client::new(url);
 
@@ -41,7 +49,7 @@ fn listen_and_emit_messages(channel_id: i32, app: AppHandle, token: Cancellation
         }
         match event {
             Ok(message) => app.emit_all("new_message", message.data).unwrap(),
-            Err(_) => ()
+            Err(_) => (),
         }
     }
 }
@@ -59,8 +67,9 @@ pub async fn subscribe(
         Ok(_) => {}
         Err(e) => {
             return Err(result::OperationResult::new(
-                e,
+                None,
                 result::ResultCode::ERROR,
+                Some(e),
             ));
         }
     }
@@ -77,24 +86,45 @@ pub async fn subscribe(
     );
 
     return Ok(result::OperationResult::new(
-        format!(
-            "Stopped listening for messages from channel: {}",
-            channel_id
+        Some(
+            serde_json::from_str(
+                format!(
+                    "Stopped listening for messages from channel: {}",
+                    channel_id
+                )
+                .as_str(),
+            )
+            .unwrap(),
         ),
         result::ResultCode::SUCCESS,
+        None,
     ));
 }
 
-
 #[tauri::command]
-pub async fn send_message(channel_id: u32, author_id: u32, content: String) -> Result<result::OperationResult, result::OperationResult> {
+pub async fn send_message(
+    channel_id: u32,
+    author_id: u32,
+    content: String,
+) -> Result<result::OperationResult, result::OperationResult> {
     let message = message::Message::new(channel_id, author_id, content);
     let message = serde_json::to_string(&message).unwrap();
 
-    let url = reqwest::Url::parse(format!("{}/messages/{}", std::env::var("SERVER_URL").ok().unwrap_or(String::from("http://127.0.0.1:8000")), channel_id).as_str()).unwrap();
+    let url = reqwest::Url::parse(
+        format!(
+            "{}/messages/{}",
+            std::env::var("SERVER_URL")
+                .ok()
+                .unwrap_or(String::from("http://127.0.0.1:8000")),
+            channel_id
+        )
+        .as_str(),
+    )
+    .unwrap();
     let client = reqwest::Client::new();
 
-    let response = client.post(url)
+    let response = client
+        .post(url)
         .header("Content-Type", "application/json")
         .body(message)
         .send()
@@ -104,37 +134,40 @@ pub async fn send_message(channel_id: u32, author_id: u32, content: String) -> R
     match response {
         r if r.status().is_success() => {
             return Ok(result::OperationResult::new(
-                "Message sent successfully".to_string(),
+                Some(serde_json::from_str("Message sent successfully").unwrap()),
                 result::ResultCode::SUCCESS,
+                None,
             ));
         }
         r if r.status().is_server_error() => {
             return Err(result::OperationResult::new(
-                "Server error".to_string(),
+                None,
                 result::ResultCode::ERROR,
+                Some("Server error".to_string()),
             ));
         }
         r if r.status().is_client_error() => {
             return Err(result::OperationResult::new(
-                "Client error".to_string(),
+                None,
                 result::ResultCode::ERROR,
+                Some("Client error".to_string()),
             ));
         }
         _ => {
             return Err(result::OperationResult::new(
-                "Unknown error".to_string(),
+                None,
                 result::ResultCode::ERROR,
+                Some("Unknown error".to_string()),
             ));
         }
     }
-
 }
 
-
-
 #[tauri::command]
-pub async fn get_channel_users(channel_id: i32, token: String) -> Result<result::OperationResult, result::OperationResult> {
-
+pub async fn get_channel_users(
+    channel_id: i32,
+    token: String,
+) -> Result<result::OperationResult, result::OperationResult> {
     let endpoint = format!("/channel/{}", channel_id);
 
     match utils::build_url(endpoint.as_str()) {

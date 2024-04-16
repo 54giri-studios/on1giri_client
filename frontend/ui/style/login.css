@@ -1,5 +1,5 @@
 #login-form {
-    display: none;
+    display: flex;
     z-index: 42;
 }
 

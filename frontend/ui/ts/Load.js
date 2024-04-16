@@ -74,8 +74,6 @@ function onReady() {
   subscribe = document.getElementById("subscribe");
   
   /*to be removed after rust login is fixed*/
-  document.cookie = "TOKEN=AUHIDUHEZ";
-  afterLogin();
 }
 
 async function login(e) {

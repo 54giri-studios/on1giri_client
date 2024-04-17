@@ -5,11 +5,26 @@ use tauri::{AppHandle, Manager, State};
 use tokio::sync::Mutex;
 use tokio_util::sync::CancellationToken;
 
-// Struct that will store the Cancellationtokens
-// corresponding to the different channels that the client
-// subscribed to
+// Struct that will store the Cancellationtokens // corresponding to the different channels that the client // subscribed to
 pub struct ChannelState {
     pub state: Mutex<HashMap<i32, CancellationToken>>,
+}
+
+async fn verify_server_is_up(url: tauri::Url) -> Option<result::OperationResult> {
+    match reqwest::get(url).await {
+        Ok(r) => {
+            if r.status().is_server_error() {
+                return Some(result::OperationResult::new(None, result::ResultCode::ERROR, Some("Internal server error, contact the mainteners".into())));
+            }else{
+                return None;
+            }
+        },
+        Err(e) => Some(result::OperationResult::new(
+            None,
+            result::ResultCode::ERROR,
+            Some(e.to_string()),
+        )),
+    }
 }
 
 fn verify_user_isnt_listening(
@@ -28,18 +43,14 @@ fn verify_user_isnt_listening(
     Ok(())
 }
 
-fn listen_and_emit_messages(channel_id: i32, app: AppHandle, token: CancellationToken) {
-    let url = reqwest::Url::parse(
-        format!(
-            "{}/subscribe/{}",
-            std::env::var("SERVER_URL")
-                .ok()
-                .unwrap_or(String::from("http://127.0.0.1:8000")),
-            channel_id
-        )
-        .as_str(),
-    )
-    .unwrap();
+async fn listen_and_emit_messages(
+    server: tauri::Url,
+    channel_id: i32,
+    app: AppHandle,
+    token: CancellationToken,
+) -> Result<(), result::OperationResult> {
+
+    let url = reqwest::Url::parse(format!("{}/subscribe/{}", server, channel_id).as_str()).unwrap();
 
     let client = Client::new(url);
 
@@ -52,6 +63,24 @@ fn listen_and_emit_messages(channel_id: i32, app: AppHandle, token: Cancellation
             Err(_) => (),
         }
     }
+    Ok(())
+}
+
+fn get_and_parse_url() -> Result<tauri::Url, result::OperationResult> {
+
+    let server = std::env::var("SERVER_URL")
+        .ok()
+        .unwrap_or(String::from("http://127.0.0.1:8000"));
+
+    match reqwest::Url::parse(&server) {
+        Ok(e) => Ok(e),
+        Err(_) => 
+            Err(result::OperationResult::new(
+                None,
+                result::ResultCode::ERROR,
+                Some("Cannot parse server's url".into()),
+            ))
+    }
 }
 
 #[tauri::command]
@@ -61,6 +90,13 @@ pub async fn subscribe(
     state: State<'_, ChannelState>,
 ) -> Result<result::OperationResult, result::OperationResult> {
     log::trace!("Subscribe function called");
+
+    let url = get_and_parse_url()?;
+
+    if let Some(e) = verify_server_is_up(url.clone()).await {
+        return Err(e);
+    }
+
     let mut tokens = state.state.lock().await;
 
     match verify_user_isnt_listening(channel_id, &tokens) {
@@ -77,28 +113,32 @@ pub async fn subscribe(
     tokens.insert(channel_id, CancellationToken::new());
 
     let token = tokens.get(&channel_id);
-    listen_and_emit_messages(
+    match listen_and_emit_messages(
+        url,
         channel_id,
         app,
         token
             .expect(format!("Token registered for channel {} is invalid", channel_id).as_str())
             .clone(),
-    );
-
-    return Ok(result::OperationResult::new(
-        Some(
-            serde_json::from_str(
-                format!(
-                    "Stopped listening for messages from channel: {}",
-                    channel_id
+    )
+    .await
+    {
+        Ok(_) => Ok(result::OperationResult::new(
+            Some(
+                serde_json::from_str(
+                    format!(
+                        "Stopped listening for messages from channel: {}",
+                        channel_id
+                    )
+                    .as_str(),
                 )
-                .as_str(),
-            )
-            .unwrap(),
-        ),
-        result::ResultCode::SUCCESS,
-        None,
-    ));
+                .unwrap(),
+            ),
+            result::ResultCode::SUCCESS,
+            None,
+        )),
+        Err(e) => Err(e),
+    }
 }
 
 #[tauri::command]

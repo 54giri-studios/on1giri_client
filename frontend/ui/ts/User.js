@@ -44,7 +44,7 @@ class UserButton {
 
     displayBanner() {
         let banner = new UserBanner(this.name, this.connectionStatus, this.connectionMessage);
-        document.appendChild(banner.display());
+        body.firstElementChild.appendChild(banner.display());
     }
 }
 

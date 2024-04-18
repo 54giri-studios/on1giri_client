@@ -5,6 +5,10 @@ async function postMessage(message) {
         chat.appendChild(messageBloc.display());
         scrollDown();
     }).catch((result)=>{
+        let messageBloc = new Message(message, "14 juillet 1789", "Blanchard", 0); 
+        console.log(messageBloc.display())
+        chat.appendChild(messageBloc.display());
+        scrollDown();
         console.log("failed to post message");
     })
 }

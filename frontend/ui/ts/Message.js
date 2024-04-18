@@ -18,17 +18,23 @@ class Message {
         username.className = "username";
         username.innerText = this.authorName;
         username.addEventListener("click", async ()=>await this.getAuthorInfo(), false);
+        let dateWrapper = document.createElement("div");
+        dateWrapper.className = "dateWrapper";
         let date = document.createElement("small");
         date.className = "date";
         date.innerText = this.date;
+        dateWrapper.appendChild(date);
 
         infoBox.appendChild(username);
-        infoBox.appendChild(date);
+        infoBox.appendChild(dateWrapper);
 
 
         let content = document.createElement("p");
         content.className = "messageContent"
         content.textContent = this.content;
+
+        messageBox.appendChild(infoBox);
+        messageBox.appendChild(content);
 
         return messageBox;
     }

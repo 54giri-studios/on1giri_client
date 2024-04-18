@@ -11,23 +11,34 @@
 .messageMetadata {
     display: flex;
     flex-direction: row;
-    justify-content:flex-start;
 }
 
 .messageContent {
-
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .username {
-
+    flex-grow: 0;
+    flex-shrink: 0;
+    margin: 5px;
 }
 
 .username:hover {
     text-decoration: underline;
 }
 
+.dateWrapper {
+    display: flex;
+    justify-content: end;
+    flex-direction: column;
+    margin: 5px;
+}
+
 .date {
     color: var(--unimportant-text-color);
+    flex-grow: 0;
+    flex-shrink: 0;
 }
 
 .date:hover {

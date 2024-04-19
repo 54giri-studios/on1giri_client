@@ -2,13 +2,13 @@ use super::*;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct Message {
-    channel_id: u32,
-    author_id: u32,
+    channel_id: i32,
+    author_id: i32,
     content: String,
 }
 
 impl Message {
-    pub fn new(channel_id: u32, author_id: u32, content: String) -> Self {
+    pub fn new(channel_id: i32, author_id: i32, content: String) -> Self {
         Message {
             channel_id,
             author_id,
@@ -34,6 +34,7 @@ pub async fn get_messages(
         Err(e) => Err(e),
     }
 }
+
 #[tauri::command]
 pub async fn get_latest_messages(
     channel_id: i32,

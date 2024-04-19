@@ -21,12 +21,11 @@ RUN curl -sL https://deb.nodesource.com/setup_21.x | bash -
 RUN apt-get install -y nodejs
 
 
-# Install Rust 1.70
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN rustup component add rust-analyzer
+#RUN rustup component add rust-analyzer
 
 # Copy the source code from parent directory to the working directory
 COPY . .
@@ -46,4 +45,5 @@ WORKDIR /app/src-tauri
 # CMD ["./src-tauri/target/release/app"]
 
 # Run the application for development purpose
-CMD ["cargo", "test", "--", "--test-threads=1"]
+#CMD ["cargo", "test", "--", "--test-threads=1"]
+CMD ["cargo", "tauri", "dev"]

@@ -50,7 +50,7 @@ async fn listen_and_emit_messages(
     token: CancellationToken,
 ) -> Result<(), result::OperationResult> {
 
-    let url = reqwest::Url::parse(format!("{}/subscribe/{}", server, channel_id).as_str()).unwrap();
+    let url = reqwest::Url::parse(format!("{}/channels/{}/subscribe", server, channel_id).as_str()).unwrap();
 
     let client = Client::new(url);
 
@@ -59,7 +59,7 @@ async fn listen_and_emit_messages(
             break;
         }
         match event {
-            Ok(message) => app.emit_all("new_message", message.data).unwrap(),
+            Ok(message) => {println!("-------------NEW MESSAGE RECEIVED -------------"); app.emit_all("new_message", message.data).unwrap()},
             Err(_) => (),
         }
     }
@@ -143,8 +143,8 @@ pub async fn subscribe(
 
 #[tauri::command]
 pub async fn send_message(
-    channel_id: u32,
-    author_id: u32,
+    channel_id: i32,
+    author_id: i32,
     content: String,
 ) -> Result<result::OperationResult, result::OperationResult> {
     let message = message::Message::new(channel_id, author_id, content);
@@ -152,11 +152,10 @@ pub async fn send_message(
 
     let url = reqwest::Url::parse(
         format!(
-            "{}/messages/{}",
+            "{}/messages/",
             std::env::var("SERVER_URL")
                 .ok()
                 .unwrap_or(String::from("http://127.0.0.1:8000")),
-            channel_id
         )
         .as_str(),
     )

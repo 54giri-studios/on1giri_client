@@ -20,6 +20,7 @@ let userId = 0;
 let channelId = 0;
 let loginForm;
 let createAccountForm;
+let channelCreateForm;
 
 function onReady() {
   chat = document.getElementById("convo-chat");
@@ -72,7 +73,34 @@ function onReady() {
   })
 
   subscribe = document.getElementById("subscribe");
-  
+
+
+  let serverCreateForm = document.getElementById("server-create-form")
+  document.getElementById("createServer").addEventListener("click", async ()=>{
+    serverCreateForm.style.display = "flex";
+    serverCreateForm.firstElementChild.addEventListener("click", async (e)=>{
+      e.stopPropagation();
+    })
+    serverCreateForm.addEventListener("click", async ()=>serverCreateForm.style.display = "none")
+  })
+  serverCreateForm.addEventListener("submit", async (e)=>{
+    let name = serverCreateForm.firstElementChild.value;
+    await createServer(e, name);
+    serverCreateForm.firstElementChild.value = "";
+    serverCreateForm.style.display = "none";
+  })
+
+  channelCreateForm = document.getElementById("channel-create-form")
+  channelCreateForm.firstElementChild.addEventListener("click", async (e)=>{
+    e.stopPropagation();
+  })
+  channelCreateForm.addEventListener("click", async ()=>channelCreateForm.style.display = "none")
+  channelCreateForm.addEventListener("submit", async (e)=>{
+    let name = channelCreateForm.firstElementChild.value;
+    await createChannel(e, name);
+    channelCreateForm.firstElementChild.value = "";
+    channelCreateForm.style.display = "none";
+  })
   /*to be removed after rust login is fixed*/
 }
 
@@ -88,6 +116,7 @@ async function login(e) {
     return;
   }
   invoke("login", {username:usernameInput, password:passwordInput}).then((result)=>{
+    console.log(result)
     document.cookie = "TOKEN="+result.data.token;
     userid = result.userId;
     form.style.display = "none";

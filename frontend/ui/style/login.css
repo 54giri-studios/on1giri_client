@@ -1,6 +1,7 @@
 #login-form {
     display: flex;
     z-index: 42;
+    background-color: var(--main-color);
 }
 
 #create-account-form {

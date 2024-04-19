@@ -84,6 +84,7 @@ async function loadServerButtons() {
 }
 
 async function loadServerChannels(serverid) {
+
     if (selectedServer!=null) {
         if (selectedServer === document.getElementById("server" + serverid)) {
             //server was already selected, nothing to do here
@@ -96,6 +97,12 @@ async function loadServerChannels(serverid) {
         selectedServer = document.getElementById("server" + serverid);
         clearChannels();
     }
+    let createChannelButton = document.createElement("button");
+    createChannelButton.innerText = "New Channel";
+    createChannelButton.addEventListener("click", async ()=>{
+        channelCreateForm.style.display = "flex";
+    })
+    serverchannels.appendChild(createChannelButton);
     
     let channelButton = new ChannelButton("Le Cours", 0, ChannelType.text); 
     serverchannels.appendChild(channelButton.display());

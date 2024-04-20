@@ -121,17 +121,21 @@ async function loadServerChannels(serverid) {
 }
 
 async function loadChannelMessages(e, channelid) {
+    channelId = channelid;
     if (selectedChannel!=null) {
         if (selectedChannel === document.getElementById("channel" + channelid)) {
             //channel was already selected, nothing to do here
             return;
         } else {
+            selectedChannel.style.background = "var(--conversations-color)"
             selectedChannel = document.getElementById("channel" + channelid);
+            selectedChannel.style.background = "var(--conversations-color-selected)"
             clearMessages();
             clearChannelUsers();
         }
     } else {
         selectedChannel = document.getElementById("channel" + channelid);
+        selectedChannel.style.background = "var(--conversations-color-selected)"
         clearMessages();
         clearChannelUsers();
     }

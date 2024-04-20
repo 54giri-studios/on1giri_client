@@ -5,9 +5,9 @@
 // A button should permit to the user to subscribe to a particular channel
 async function get_in_channel(e) {
   e.preventDefault();
-  console.log("Call to the subscribe_to_channel api endpoint");
+  console.log("Call to the subscribe_to_channel api endpoint: ", channelId);
   // The channel id should correspond to the target channel
-  invoke("subscribe", { channelId: 0 });
+  invoke("subscribe", { channelId: channelId });
   listen("new_message", async (message) => {
     await display_message(message);
   });
@@ -19,8 +19,9 @@ async function get_in_channel(e) {
 // Modify it to the needs
 
 async function display_message(received) {
-  console.log(42424242424242);
+  console.log(received);
   let msg = JSON.parse(received.payload);
+  console.log(msg);
   let author = msg.author_id;
   let content = msg.content;
   let date = "14 juillet 1789";

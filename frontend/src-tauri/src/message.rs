@@ -42,10 +42,10 @@ pub async fn get_latest_messages(
     amount: i32,
     token: String,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = format!("/message/get_history_messages/{}/{}", channel_id, amount);
+    let endpoint = format!("/channels/{}/messages/history", channel_id);
     println!("getting latest{} msgs of channel {}", channel_id, amount);
     match utils::build_url(endpoint) {
-        Ok(url) => utils::fetch_data(url, token).await,
+        Ok(url) => utils::post_server(url, String::from("{}"), None).await,
         Err(e) => Err(e),
     }
 }

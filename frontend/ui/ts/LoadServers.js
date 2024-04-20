@@ -153,8 +153,6 @@ async function loadChannelMessages(e, channelid) {
         }).catch((result)=>{
             console.log("failed to get guild latest messages");
         })
-        let messageBloc = new Message("C'est dans le COUUUURS!!!", "14 juillet 1789", "Blanchard", 0); 
-        chat.appendChild(messageBloc.display());
     }).catch((response)=>{
         console.log("failed to subscribe to channel");
     });

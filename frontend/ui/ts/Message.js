@@ -1,14 +1,16 @@
 class Message {
-    constructor(content, date, authorName, authorId) {
+    constructor(content, date, authorName, authorId, id) {
         this.content = content;
         this.authorName = authorName;
         this.date = date;
         this.authorId = authorId;
+        this.id = id;
     }
 
     display() {
         let messageBox = document.createElement("div");
         messageBox.className = "message";
+        messageBox.id = "message" + this.id;
 
 
         let infoBox = document.createElement("div");
@@ -22,7 +24,12 @@ class Message {
         dateWrapper.className = "dateWrapper";
         let date = document.createElement("small");
         date.className = "date";
-        date.innerText = this.date;
+        if (this.date.getDay()==new Date(Date.now()).getDay()){
+
+            date.innerText = this.date.toLocaleTimeString();
+        } else {
+            date.innerText = this.date.toLocaleDateString();
+        }
         dateWrapper.appendChild(date);
 
         infoBox.appendChild(username);
@@ -35,6 +42,7 @@ class Message {
 
         messageBox.appendChild(infoBox);
         messageBox.appendChild(content);
+        
 
         return messageBox;
     }

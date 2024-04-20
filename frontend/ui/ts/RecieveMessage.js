@@ -19,12 +19,10 @@ async function get_in_channel(e) {
 // Modify it to the needs
 
 async function display_message(received) {
-  console.log(received);
   let msg = JSON.parse(received.payload);
-  console.log(msg);
   let author = msg.author_id;
   let content = msg.content;
-  let date = "14 juillet 1789";
-  let messageBloc = new Message(content, date, author, 0).display();
+  let date = new Date(msg.creation_date);
+  let messageBloc = new Message(content, date, author, 0, received.id).display();
   chat.appendChild(messageBloc);
 }

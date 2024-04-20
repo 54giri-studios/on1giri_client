@@ -84,7 +84,7 @@ pub async fn get_user_guilds(
     user_id: i32,
     token: String,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = format!("/user/{}/guilds", user_id);
+    let endpoint = format!("/users/{}/guilds", user_id);
     match utils::build_url(endpoint) {
         Ok(url) => utils::fetch_data(url, token).await,
         Err(e) => Err(e),

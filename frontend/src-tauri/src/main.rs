@@ -11,12 +11,17 @@ pub mod message;
 pub mod result;
 pub mod user;
 pub mod utils;
+use tauri_plugin_log::{LogTarget};
 
 fn main() {
-    simple_logger::init().unwrap();
     dotenv().ok();
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_log::Builder::default().targets([
+            LogTarget::LogDir,
+            LogTarget::Stdout,
+            LogTarget::Webview,
+        ]).build())
         .manage(channel::ChannelState {
             state: Mutex::new(HashMap::new()),
         })

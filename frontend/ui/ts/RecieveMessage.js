@@ -9,6 +9,7 @@ async function get_in_channel(e) {
   // The channel id should correspond to the target channel
   invoke("subscribe", { channelId: 0 });
   listen("new_message", (message) => {
+    console.log(message);
     display_message(message);
   });
 }
@@ -18,10 +19,10 @@ async function get_in_channel(e) {
 // This is the callback function that should be triggered
 // Modify it to the needs
 
-
-async function display_message(msg) {
-  let author = msg.author;
-  let content = msg.message;
+async function display_message(received) {
+  let msg = JSON.parse(received.payload);
+  let author = msg.author_id;
+  let content = msg.content;
   let date = "14 juillet 1789";
   let messageBloc = new Message(content, date, author, 0).display();
   chat.appendChild(messageBloc);

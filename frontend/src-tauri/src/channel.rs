@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use tauri::{AppHandle, Manager, State};
 use tokio::sync::Mutex;
 use tokio_util::sync::CancellationToken;
+use log::{info, warn};
 
 // Struct that will store the Cancellationtokens // corresponding to the different channels that the client // subscribed to
 pub struct ChannelState {
@@ -14,11 +15,15 @@ async fn verify_server_is_up(url: tauri::Url) -> Option<result::OperationResult>
     match reqwest::get(url).await {
         Ok(r) => {
             if r.status().is_server_error() {
-                return Some(result::OperationResult::new(None, result::ResultCode::ERROR, Some("Internal server error, contact the mainteners".into())));
-            }else{
+                return Some(result::OperationResult::new(
+                    None,
+                    result::ResultCode::ERROR,
+                    Some("Internal server error, contact the mainteners".into()),
+                ));
+            } else {
                 return None;
             }
-        },
+        }
         Err(e) => Some(result::OperationResult::new(
             None,
             result::ResultCode::ERROR,
@@ -49,8 +54,8 @@ async fn listen_and_emit_messages(
     app: AppHandle,
     token: CancellationToken,
 ) -> Result<(), result::OperationResult> {
-
-    let url = reqwest::Url::parse(format!("{}/channels/{}/subscribe", server, channel_id).as_str()).unwrap();
+    let url = reqwest::Url::parse(format!("{}/channels/{}/subscribe", server, channel_id).as_str())
+        .unwrap();
 
     let client = Client::new(url);
 
@@ -59,7 +64,14 @@ async fn listen_and_emit_messages(
             break;
         }
         match event {
-            Ok(message) => {println!("-------------NEW MESSAGE RECEIVED -------------"); app.emit_all("new_message", message.data).unwrap()},
+            Ok(message) => {
+                info!("----------------- RECEIVED SOMETHING : {} ------------------", message.to_string());
+                //let mess: String = serde_json::from_str(message.data.as_str()).expect("should be able to convert");
+                let mess = serde_json::to_value(message.data.as_str());
+                if let Ok(mess) = mess {
+                    app.emit_all("new_message", mess).expect("Cannot send to front");
+                };
+            }
             Err(_) => (),
         }
     }
@@ -67,19 +79,17 @@ async fn listen_and_emit_messages(
 }
 
 fn get_and_parse_url() -> Result<tauri::Url, result::OperationResult> {
-
     let server = std::env::var("SERVER_URL")
         .ok()
         .unwrap_or(String::from("http://127.0.0.1:8000"));
 
     match reqwest::Url::parse(&server) {
         Ok(e) => Ok(e),
-        Err(_) => 
-            Err(result::OperationResult::new(
-                None,
-                result::ResultCode::ERROR,
-                Some("Cannot parse server's url".into()),
-            ))
+        Err(_) => Err(result::OperationResult::new(
+            None,
+            result::ResultCode::ERROR,
+            Some("Cannot parse server's url".into()),
+        )),
     }
 }
 
@@ -89,7 +99,6 @@ pub async fn subscribe(
     app: AppHandle,
     state: State<'_, ChannelState>,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    log::trace!("Subscribe function called");
 
     let url = get_and_parse_url()?;
 
@@ -173,7 +182,7 @@ pub async fn send_message(
     match response {
         r if r.status().is_success() => {
             return Ok(result::OperationResult::new(
-                Some(serde_json::from_str("Message sent successfully").unwrap()),
+                Some(serde_json::Value::String("Message sent successfully".to_string())),
                 result::ResultCode::SUCCESS,
                 None,
             ));

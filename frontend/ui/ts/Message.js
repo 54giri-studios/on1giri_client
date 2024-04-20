@@ -17,7 +17,7 @@ class Message {
         let username = document.createElement("div");
         username.className = "username";
         username.innerText = this.authorName;
-        username.addEventListener("click", async ()=>await this.getAuthorInfo(), false);
+        username.addEventListener("click", async ()=>await this.getAuthorInfo(this.authorId), false);
         let dateWrapper = document.createElement("div");
         dateWrapper.className = "dateWrapper";
         let date = document.createElement("small");
@@ -39,7 +39,13 @@ class Message {
         return messageBox;
     }
 
-    async getAuthorInfo() {
-        
+    async getAuthorInfo(id) {
+        invoke("get_user_info", {userId:id, token:getCookieValue("TOKEN")}).then(async (result)=>{
+            console.log(result);
+            let banner = new UserBanner(result.content.name, result.content.connectionStatus, result.content.connectionMessage);
+            body.firstElementChild.appendChild(banner.display());
+        }).catch(async (result)=>{
+            console.log(result);
+        })
     }
 }

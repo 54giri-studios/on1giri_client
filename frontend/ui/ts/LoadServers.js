@@ -64,11 +64,11 @@ class ChannelButton {
 async function loadServerButtons() {
     //should call get_servers from rust backend
     let serverid = 0; //dummy value
-    let serverButton = new ServerButton("blanchard", 0, "./blanchard.png"); 
+    let serverButton = new ServerButton("blanchard", 0, "./blanchard.png");
     servertab.appendChild(serverButton.display());
     
 
-    invoke("get_user_guilds", {userId: userId}).then((result)=>{
+    invoke("get_user_guilds", {userId: userId, token:getCookieValue("TOKEN")}).then((result)=>{
         for (server in result.data) {
             let serverid = server.id; //dummy value
             let button = document.createElement("button");
@@ -78,7 +78,8 @@ async function loadServerButtons() {
             servertab.appendChild(button);
             button.addEventListener("click", ()=> loadServerChannels(serverid));
         }
-    }).catch(()=>{
+    }).catch((response)=>{
+        console.log(response);
         console.log("failed to get server ids");
     });
 }
@@ -104,7 +105,7 @@ async function loadServerChannels(serverid) {
     })
     serverchannels.appendChild(createChannelButton);
     
-    let channelButton = new ChannelButton("Le Cours", 0, ChannelType.text); 
+    let channelButton = new ChannelButton("Le Cours", 42, ChannelType.text); 
     serverchannels.appendChild(channelButton.display());
     
     invoke("get_guild_channels", {guildId: serverid, token: getCookieValue("TOKEN")}).then((result)=>{
@@ -138,7 +139,6 @@ async function loadChannelMessages(e, channelid) {
     get_in_channel(e).then(async (response)=>{
         await loadChannelUsers(channelid);
         invoke("get_latest_messages", {channelId: channelid, amount: 30, token: getCookieValue("TOKEN")}).then((result)=>{
-            console.log(result.content);
             for (message in result.content) {
                 let author = message.author;
                 let content = message.content;

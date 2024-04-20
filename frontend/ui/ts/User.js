@@ -63,7 +63,6 @@ class UserButton {
     }
 
     displayBanner(name, status, message) {
-        console.log(this.name);
         let banner = new UserBanner(name, status, message);
         body.firstElementChild.appendChild(banner.display());
     }

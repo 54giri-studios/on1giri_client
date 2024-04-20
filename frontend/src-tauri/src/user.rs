@@ -71,7 +71,7 @@ pub async fn get_user_info(
     user_id: i32,
     token: String,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = format!("/user/{}", user_id);
+    let endpoint = format!("/users/{}", user_id);
 
     match utils::build_url(endpoint) {
         Ok(url) => utils::fetch_data(url, token).await,

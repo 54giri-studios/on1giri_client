@@ -146,11 +146,21 @@ async function createAccount(e) {
     return;
   }
   invoke("create_user", {username:usernameInput, email:passwordInput, description:"haha", picture:"velipaka"}).then((result)=>{
-  }).catch(()=>{
-    console.log("failed to create account");
-  })
+  if (document.getElementById("error")!=undefined){
+    document.getElementById("error").remove();
+  }
   loginForm.style.display = "flex";
   createAccountForm.style.display = "none";
+  }).catch(()=>{
+    console.log("failed to create account");
+    let errorMsg = document.createElement("small");
+    errorMsg.id = "error";
+    errorMsg.style.color = "red";
+    errorMsg.textContent = "failed to create account";
+
+    form.firstElementChild.appendChild(errorMsg);
+  })
+  
 }
 
 window.addEventListener("load", onReady, false);

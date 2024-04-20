@@ -8,9 +8,8 @@ async function get_in_channel(e) {
   console.log("Call to the subscribe_to_channel api endpoint");
   // The channel id should correspond to the target channel
   invoke("subscribe", { channelId: 0 });
-  listen("new_message", (message) => {
-    console.log(message);
-    display_message(message);
+  listen("new_message", async (message) => {
+    await display_message(message);
   });
 }
 
@@ -20,6 +19,7 @@ async function get_in_channel(e) {
 // Modify it to the needs
 
 async function display_message(received) {
+  console.log(42424242424242);
   let msg = JSON.parse(received.payload);
   let author = msg.author_id;
   let content = msg.content;

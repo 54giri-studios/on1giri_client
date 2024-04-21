@@ -11,6 +11,10 @@
     border-color: var(--conversations-color);
 }
 
+.channel-selected {
+    background: var(--conversations-color-selected);
+}
+
 .channel > button {
     border: none;
     width: 100%;

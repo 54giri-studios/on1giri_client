@@ -69,7 +69,8 @@ async function loadServerButtons() {
     
 
     invoke("get_user_guilds", {userId: userId, token:getCookieValue("TOKEN")}).then((result)=>{
-        for (server in result.data) {
+        for (const server of result.content) {
+            console.log(server)
             let serverid = server.id; //dummy value
             let button = document.createElement("button");
             button.className = "server";
@@ -107,7 +108,6 @@ async function loadServerChannels(serverid) {
     
     let channelButton = new ChannelButton("Le Cours", 42, ChannelType.text); 
     serverchannels.appendChild(channelButton.display());
-    
     invoke("get_guild_channels", {guildId: serverid, token: getCookieValue("TOKEN")}).then((result)=>{
         let channelList = result.content;
 
@@ -115,7 +115,8 @@ async function loadServerChannels(serverid) {
             let channelElement = new ChannelButton(channel.name, channel.id, channel.kind);
             serverchannels.appendChild(channelElement.display());
         }
-    }).catch(()=>{
+    }).catch((response)=>{
+        console.log(response);
         console.log("failed to get guild channels");
     });
 }
@@ -127,15 +128,15 @@ async function loadChannelMessages(e, channelid) {
             //channel was already selected, nothing to do here
             return;
         } else {
-            selectedChannel.style.background = "var(--conversations-color)"
+            selectedChannel.classList.remove("channel-selected");
             selectedChannel = document.getElementById("channel" + channelid);
-            selectedChannel.style.background = "var(--conversations-color-selected)"
+            selectedChannel.classList.add("channel-selected");
             clearMessages();
             clearChannelUsers();
         }
     } else {
         selectedChannel = document.getElementById("channel" + channelid);
-        selectedChannel.style.background = "var(--conversations-color-selected)"
+        selectedChannel.classList.add("channel-selected");
         clearMessages();
         clearChannelUsers();
     }
@@ -143,12 +144,17 @@ async function loadChannelMessages(e, channelid) {
     get_in_channel(e).then(async (response)=>{
         await loadChannelUsers(channelid);
         invoke("get_latest_messages", {channelId: channelid, amount: 30, token: getCookieValue("TOKEN")}).then((result)=>{
-            for (message in result.content) {
-                let author = message.author;
+            console.log(result)
+            for (const message of result.content) {
+                let author = message.author_id;
                 let content = message.content;
-                let messageBloc = new Message(author, content).display();
+                let date = new Date(message.creation_date);
+                let authorName = "unknown User";
+                let id = message.id;
+                let messageBloc = new Message(content, date, authorName, author, id).display();
                 messageBloc.id = "message" + message.id;
                 chat.appendChild(messageBloc);
+                scrollDown();
             }
         }).catch((result)=>{
             console.log("failed to get guild latest messages");

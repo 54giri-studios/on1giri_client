@@ -78,12 +78,6 @@ class ChannelButton {
 }
 
 async function loadServerButtons() {
-    //should call get_servers from rust backend
-    let serverid = 0; //dummy value
-    let serverButton = new ServerButton("blanchard", 0, "./blanchard.png");
-    servertab.appendChild(serverButton.display());
-    
-
     invoke("get_user_guilds", {userId: userId, token:getCookieValue("TOKEN")}).then((result)=>{
         for (const server of result.content) {
             let serverid = server.id;
@@ -118,8 +112,6 @@ async function loadServerChannels(serverid) {
     })
     serverchannels.appendChild(createChannelButton);
     
-    let channelButton = new ChannelButton("Le Cours", 42, ChannelType.text); 
-    serverchannels.appendChild(channelButton.display());
     invoke("get_guild_channels", {guildId: serverid, token: getCookieValue("TOKEN")}).then((result)=>{
         let channelList = result.content;
 

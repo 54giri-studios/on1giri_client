@@ -68,3 +68,19 @@ class UserButton {
     }
 }
 
+
+class User {
+    constructor(id, username, discriminator, last_check_in, picture, creation_date) {
+        this.id = id;
+        this.username = username;
+        this.discriminator = discriminator;
+        this.last_check_in = last_check_in;
+        this.picture = picture;
+        this.creation_date = creation_date;
+    }
+
+    display(user) {
+        let res = new UserBanner(user.username, "online", "kill me");
+        body.firstElementChild.appendChild(res.display());
+    }
+}

@@ -22,9 +22,25 @@ class ServerButton {
         
         button.addEventListener("click", async ()=> await loadServerChannels(this.id));
         
-        button.style.backgroundImage = `url(${this.picture})`
+        if (this.picture.length>0){
+            button.style.backgroundImage = `url(${this.picture})`;
+        } else {
+            let p = document.createElement("h1");
+            p.textContent = parseInitials(this.name);
+            button.appendChild(p);
+        }
         return button
     }
+
+}
+
+function parseInitials(name) {
+    let res = "";
+    let list = name.split(" ");
+    for (const word of list) {
+        res+=Array.from(word)[0];
+    }
+    return res;
 }
 
 const ChannelType = {
@@ -70,17 +86,13 @@ async function loadServerButtons() {
 
     invoke("get_user_guilds", {userId: userId, token:getCookieValue("TOKEN")}).then((result)=>{
         for (const server of result.content) {
-            console.log(server)
-            let serverid = server.id; //dummy value
-            let button = document.createElement("button");
-            button.className = "server";
-            button.textContent = server.name;
-            button.id = "server" + serverid;
+            let serverid = server.id;
+            let button = new ServerButton(server.name, serverid, "");
+            button = button.display();
             servertab.appendChild(button);
-            button.addEventListener("click", ()=> loadServerChannels(serverid));
+            button.addEventListener("click", ()=> loadServerChannels(serverid), false);
         }
     }).catch((response)=>{
-        console.log(response);
         console.log("failed to get server ids");
     });
 }
@@ -116,7 +128,6 @@ async function loadServerChannels(serverid) {
             serverchannels.appendChild(channelElement.display());
         }
     }).catch((response)=>{
-        console.log(response);
         console.log("failed to get guild channels");
     });
 }
@@ -144,14 +155,12 @@ async function loadChannelMessages(e, channelid) {
     get_in_channel(e).then(async (response)=>{
         await loadChannelUsers(channelid);
         invoke("get_latest_messages", {channelId: channelid, amount: 30, token: getCookieValue("TOKEN")}).then((result)=>{
-            console.log(result)
             for (const message of result.content) {
-                let author = message.author_id;
+                let author = new User(message.author.id, message.author.username, message.author.discriminator, message.author.last_check_in, message.author.picture, message.author.creation_date);
                 let content = message.content;
                 let date = new Date(message.creation_date);
-                let authorName = "unknown User";
                 let id = message.id;
-                let messageBloc = new Message(content, date, authorName, author, id).display();
+                let messageBloc = new Message(content, date, author, author, id).display();
                 messageBloc.id = "message" + message.id;
                 chat.appendChild(messageBloc);
                 scrollDown();

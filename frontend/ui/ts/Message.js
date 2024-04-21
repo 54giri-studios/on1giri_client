@@ -1,9 +1,9 @@
 class Message {
-    constructor(content, date, authorName, authorId, id) {
+    constructor(content, date, author, id) {
         this.content = content;
-        this.authorName = authorName;
+        this.author = author; // struct user
         this.date = date;
-        this.authorId = authorId;
+        this.author = author;
         this.id = id;
     }
 
@@ -18,8 +18,8 @@ class Message {
 
         let username = document.createElement("div");
         username.className = "username";
-        username.innerText = this.authorName;
-        username.addEventListener("click", async ()=>await this.getAuthorInfo(this.authorId), false);
+        username.innerText = this.author.username;
+        username.addEventListener("click", async ()=>await this.author.display(this.author), false);
         let dateWrapper = document.createElement("div");
         dateWrapper.className = "dateWrapper";
         let date = document.createElement("small");

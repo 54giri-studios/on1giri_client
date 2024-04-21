@@ -20,9 +20,17 @@ async function get_in_channel(e) {
 
 async function display_message(received) {
   let msg = JSON.parse(received.payload);
-  let author = msg.author_id;
-  let content = msg.content;
-  let date = new Date(msg.creation_date);
-  let messageBloc = new Message(content, date, author, 0, received.id).display();
-  chat.appendChild(messageBloc);
+  invoke("get_user_info", {user_id:msg.authorId, token:getCookieValue("TOKEN")}).then(async (result)=>{
+    let author = new User(result.id, result.username, result.discriminator, result.last_check_in, result.picture, result.creation_date);
+    let content = msg.content;
+    let date = new Date(msg.creation_date);
+    let messageBloc = new Message(content, date, author, 0, received.id).display();
+    chat.appendChild(messageBloc);
+  }).catch(async (result)=>{
+    let author = new User(undefined, undefined, undefined, undefined, undefined, undefined);
+    let content = msg.content;
+    let date = new Date(msg.creation_date);
+    let messageBloc = new Message(content, date, author, 0, received.id).display();
+    chat.appendChild(messageBloc);
+  })
 }

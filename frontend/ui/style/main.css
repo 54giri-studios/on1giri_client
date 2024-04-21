@@ -2,10 +2,15 @@
     font-size: 20px;
     --main-color: rgb(0, 48, 97);
     --main-color-transparent: rgb(58, 77, 96, .7);
+
+    --server-default-color: rgb(130, 0, 0);
+
     --text-input-box-color: rgb(0, 14, 72);
+
     --conversations-color: rgb(0, 33, 66);
     --conversations-color-hover: rgb(0, 48, 95);
     --conversations-color-selected:rgb(0, 59, 117);
+
     --text-hover-color: rgb(30, 56, 82);
     --unimportant-text-color: rgb(92, 92, 92);
 }
@@ -59,3 +64,28 @@ body> div, form {
     flex-grow: 0;
     flex-shrink: 0;
 }
+
+.tooltip {
+    position: relative;
+}
+
+.tooltip .tooltiptext {
+    position: absolute;
+    visibility: hidden;
+    width: fit-content;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 5px;
+    border-color: black;
+    z-index: 1;
+    top: 30px;
+    left: 105%;
+  }
+  
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }

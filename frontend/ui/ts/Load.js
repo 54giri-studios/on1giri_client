@@ -36,24 +36,34 @@ function onReady() {
   serverchannels = document.getElementById("channel-list");
   
   message_edit_section = document.getElementById("message-edit");
-  message_edit_section.addEventListener('submit', (e) => {
+  message_edit_section.addEventListener('submit', async (e) => {
     e.preventDefault();
     let messageText = document.getElementById("input-message").value;
     document.getElementById("input-message").value = "";
-    postMessage(messageText);
+    if (messageText.length>0) {
+      await postMessage(messageText);
+    }
     }, false);
-  document.getElementById("input-message").addEventListener("keydown", (e)=>{
+  document.getElementById("input-message").addEventListener("keydown", async (e)=>{
     let elem = document.getElementById("input-message");
     if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
-        elem.style.height = "28px";
+        elem.style.height = "30px";
         message_edit_section.requestSubmit();
         return;
-    } 
+    }
     setTimeout(()=>{
-      elem.style.height = "1em";
-      elem.style.height = Math.min(elem.scrollHeight, 10 * 28) + "px";
-    }, 10)
+      let convochat = document.getElementById("convo-chat-wrapper");
+      if (convochat.scrollTop == convochat.scrollHeight - convochat.clientHeight) {
+        // if the chat is scrolled down
+        elem.style.height = "30px";
+        elem.style.height = Math.min(elem.scrollHeight-4, 10 * 30) + "px";
+        convochat.scrollTop = convochat.scrollHeight;
+      } else {
+        elem.style.height = "30px";
+        elem.style.height = Math.min(elem.scrollHeight-4, 10 * 30) + "px";
+      }
+    }, 5)
   }, false)
 
 
@@ -116,8 +126,7 @@ async function login(e) {
     return;
   }
   invoke("login", {username:usernameInput, password:passwordInput}).then((result)=>{
-    console.log(result)
-    document.cookie = "TOKEN="+result.data.token;
+    document.cookie = "TOKEN="+result.content.token;
     userid = result.userId;
     form.style.display = "none";
     afterLogin();
@@ -125,7 +134,6 @@ async function login(e) {
     document.cookie = "TOKEN=AUHIDUHEZ";
     form.style.display = "none";
     afterLogin();
-    console.log(response);
     console.log("Failed to login");
   })
 }

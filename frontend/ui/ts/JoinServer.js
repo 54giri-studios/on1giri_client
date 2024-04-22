@@ -27,7 +27,7 @@ async function joinServerSubmit(e) {
         invoke("add_user_to_guild", {guildId: id, userId:0, token: getCookieValue("TOKEN")}).then((response) => {
             loadServerButtons();
         }).catch((response)=>{
-            console.log(response)
+            console.log("could not join server");
         })
     }
     e.stopPropagation();

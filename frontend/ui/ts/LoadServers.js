@@ -152,9 +152,10 @@ async function loadChannelMessages(e, channelid) {
                 let content = message.content;
                 let date = new Date(message.creation_date);
                 let id = message.id;
-                let messageBloc = new Message(content, date, author, author, id).display();
-                messageBloc.id = "message" + message.id;
-                chat.appendChild(messageBloc);
+                if (document.getElementById("message"+id)!=undefined) {
+                    continue;
+                }
+                new Message(content, date, author, author, id).display();
                 scrollDown();
             }
         }).catch((result)=>{
@@ -174,8 +175,7 @@ async function loadChannelUsers(channelid) {
             channelMembers.appendChild(userBlock.display());
         }
     }).catch((response)=>{
-        let userBlock = new UserButton("Blanchard", 0, "online", "it's vaugeling time !!!!!!!!!!!!");
-        channelMembers.appendChild(userBlock.display());
+        console.log(response)
     })
 }
 

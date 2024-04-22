@@ -5,6 +5,30 @@
     word-wrap: break-word;
     word-break: break-word;
     display: flex;
+    flex-direction: row;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+
+.messageLWrapper {
+    position: relative;
+    flex-shrink: 0;
+    width: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.messageRWrapper {
+    flex-shrink: 1;
+    width: 100%;
+    height: fit-content;
+    display: inline-block;
+    word-wrap: break-word;
+    word-break: break-word;
+    display: flex;
     flex-direction: column;
     margin-top: 5px;
     margin-bottom: 5px;
@@ -16,8 +40,11 @@
 }
 
 .messageContent {
+    margin-top: 0px;
+    margin-bottom: 0px;
     margin-left: 10px;
     margin-right: 10px;
+    white-space: pre-wrap;
 }
 
 .username {
@@ -45,4 +72,23 @@
 
 .date:hover {
 
+}
+
+.profilePicture {
+    height: 50px;
+    width: 50px;
+    border-radius: 25px;
+    border: none;
+    margin: none;
+    display: flex;
+    align-items: center;
+
+}
+
+.simpleDate {
+    color: var(--unimportant-text-color);
+}
+
+.profilePicture>h2 {
+    width: 100%;
 }

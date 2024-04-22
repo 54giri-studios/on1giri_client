@@ -28,18 +28,16 @@ input, textarea {
 }
 
 #convo-chat {
-    padding-bottom: 5px;
     width: 100%;
     flex-shrink: 1;
     display: flex;
-    row-gap: 5px;
     justify-content: end;
     flex-direction: column;
+    row-gap: 0;
 }
 
 #convo-chat>div {
     width: 100%;
-    display: inline-block;
     word-wrap: break-word;
     word-break: break-word;
 }
@@ -63,7 +61,7 @@ input, textarea {
     right: 5px;
     left: 5px;
     margin: 5px;
-    height:28px;
+    height:30px;
     resize: none;
     font-size: 1rem;
 }

@@ -1,11 +1,12 @@
 :root {
     font-size: 20px;
+    -webkit-user-select: none;
     --main-color: rgb(0, 48, 97);
     --main-color-transparent: rgb(58, 77, 96, .7);
 
     --server-default-color: rgb(130, 0, 0);
 
-    --text-input-box-color: rgb(0, 14, 72);
+    --text-input-box-color: rgb(0, 20, 100);
 
     --conversations-color: rgb(0, 33, 66);
     --conversations-color-hover: rgb(0, 48, 95);
@@ -13,10 +14,29 @@
 
     --text-hover-color: rgb(30, 56, 82);
     --unimportant-text-color: rgb(92, 92, 92);
+
+    --main-scrollbar-color: rgb(1, 0, 63);
+    --main-scrollbar-color-track: rgb(12, 34, 107);
+
+    --small-scrollbar-color: rgb(1, 0, 63);
 }
 
 
 
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--small-scrollbar-color);
+    border-radius: 3px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
 
 body {
     color: white;

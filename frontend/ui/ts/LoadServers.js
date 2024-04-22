@@ -29,7 +29,7 @@ class ServerButton {
             p.textContent = parseInitials(this.name);
             button.appendChild(p);
         }
-        return button
+        return button;
     }
 
 }
@@ -155,7 +155,7 @@ async function loadChannelMessages(e, channelid) {
                 if (document.getElementById("message"+id)!=undefined) {
                     continue;
                 }
-                new Message(content, date, author, author, id).display();
+                new Message(content, date, author, id).display();
                 scrollDown();
             }
         }).catch((result)=>{

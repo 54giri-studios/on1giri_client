@@ -9,7 +9,6 @@ class Message {
 
     display() {
 
-
         let messageBox = document.createElement("div");
         messageBox.className = "message";
         messageBox.id = "message" + this.id;
@@ -119,4 +118,9 @@ class Message {
         let date2 = new Date(node2.getAttribute("date"));
         return date1<date2;
     }
+}
+
+async function fetchMoreMsg(msgDate) {
+    // call to get_message
+    console.log("fetching msg before", msgDate);
 }

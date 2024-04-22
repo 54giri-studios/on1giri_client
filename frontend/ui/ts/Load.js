@@ -5,6 +5,10 @@ function getCookieValue(name) {
   if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
+function clearCookieValue(name) {
+  document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+}
+
 
 
 let body;
@@ -21,9 +25,17 @@ let channelId = 0;
 let loginForm;
 let createAccountForm;
 let channelCreateForm;
+let logoutBtn;
 
 function onReady() {
   chat = document.getElementById("convo-chat");
+  let convochat = document.getElementById("convo-chat-wrapper");
+  convochat.addEventListener("scroll", async (e)=>{
+    if (convochat.scrollTop==0) {
+      let msgDate = new Date(convochat.firstElementChild.firstElementChild.getAttribute("date"));
+      fetchMoreMsg(msgDate);
+    }
+  })
   channelMembers = document.getElementById("channel-members");
 
   join = document.getElementById("subscribe");
@@ -53,7 +65,6 @@ function onReady() {
         return;
     }
     setTimeout(()=>{
-      let convochat = document.getElementById("convo-chat-wrapper");
       if (convochat.scrollTop == convochat.scrollHeight - convochat.clientHeight) {
         // if the chat is scrolled down
         elem.style.height = "30px";
@@ -67,6 +78,8 @@ function onReady() {
   }, false)
 
 
+  logoutBtn = document.getElementById("logout");
+  logoutBtn.addEventListener("click", afterLogout);
   loginForm = document.getElementById("login-form");
   createAccountForm = document.getElementById("create-account-form");
   loginForm.firstElementChild.addEventListener("submit",async (e)=>await login(e), false);
@@ -112,6 +125,12 @@ function onReady() {
     channelCreateForm.style.display = "none";
   })
   /*to be removed after rust login is fixed*/
+  if (getCookieValue("TOKEN") != undefined) {
+    // token presend, try loging in with token
+    // should invoke login
+    loginForm.style.display = "none";
+    afterLogin();
+  }
 }
 
 async function login(e) {
@@ -140,6 +159,11 @@ async function login(e) {
 
 async function afterLogin() {
   await loadServerButtons();
+}
+
+async function afterLogout() {
+  clearCookieValue("TOKEN");
+  location.reload();
 }
 
 async function createAccount(e) {

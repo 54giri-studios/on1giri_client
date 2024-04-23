@@ -3,11 +3,18 @@ use std::collections::HashMap;
 
 #[tauri::command]
 pub async fn login(
-    username: String,
-    password: String,
+    username: Option<String>,
+    password: Option<String>,
     token: Option<String>,
 ) -> Result<result::OperationResult, result::OperationResult> {
     let endpoint = format!("/login");
+
+    if username.is_none() && password.is_none() {
+        return match utils::build_url(endpoint) {
+            Ok(url) => utils::post_server(url, None, token).await,
+            Err(e) => Err(e),
+        };
+    }
 
     let json = {
         let mut map = HashMap::new();
@@ -30,7 +37,7 @@ pub async fn login(
     }
 
     let result = match utils::build_url(endpoint) {
-        Ok(url) => utils::post_server(url, body, None).await,
+        Ok(url) => utils::post_server(url, Some(body), None).await,
         Err(e) => Err(e),
     };
 
@@ -54,7 +61,7 @@ pub async fn create_user(
 
     if let Ok(body) = utils::convert_to_json_str(body) {
         match utils::build_url(endpoint) {
-            Ok(u) => utils::post_server(u, body, None).await,
+            Ok(u) => utils::post_server(u, Some(body), None).await,
             Err(e) => Err(e),
         }
     } else {
@@ -190,7 +197,7 @@ mod test {
                 .body("{ \"token\" : \"fljdasf85425fklhafasflas\" }");
         });
 
-        match login("user".into(), "pass".into(), None).await {
+        match login(Some("user".into()), Some("pass".into()), None).await {
             Ok(res) => {
                 assert_eq!(res.code, result::ResultCode::SUCCESS);
                 assert_eq!(
@@ -220,7 +227,7 @@ mod test {
                 .body("{ \"token\" : \"fljdasf85425fklhafasflas\" }");
         });
 
-        match login("user".into(), "pass".into(), None).await {
+        match login(Some("user".into()), Some("pass".into()), None).await {
             Err(res) => {
                 assert_eq!(res.code, result::ResultCode::ERROR);
                 assert_eq!(

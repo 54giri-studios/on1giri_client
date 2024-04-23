@@ -107,16 +107,21 @@ pub async fn fetch_data(
 
 pub async fn post_server(
     url: reqwest::Url,
-    body: String,
+    body: Option<String>,
     token: Option<String>,
 ) -> Result<result::OperationResult, result::OperationResult> {
     let client = reqwest::Client::new();
 
-    let mut call = client.post(url).header("Content-type", "application/json").body(body);
+    let mut call = client.post(url).header("Content-type", "application/json");
+
+    if let Some(bod) = body {
+        call = call.body(bod);
+    }
 
     if let Some(tok) = token {
         call = call.header("AUTHORIZATION", format!("Bearer {}", tok));
     }
+
     handle_response(call.send().await).await
 }
 

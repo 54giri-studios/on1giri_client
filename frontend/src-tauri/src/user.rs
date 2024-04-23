@@ -11,37 +11,17 @@ pub async fn login(
 
     if username.is_none() && password.is_none() {
         return match utils::build_url(endpoint) {
-            Ok(url) => utils::post_server(url, None, token).await,
+            Ok(url) => utils::post_form_server(url, None, token).await,
             Err(e) => Err(e),
         };
     }
 
-    let json = {
-        let mut map = HashMap::new();
-        map.insert("username", username);
-        map.insert("password", password);
-        map
-    };
+    let input = [(String::from("username"), username.unwrap()), (String::from("password"), password.unwrap())];
 
-    let result = serde_urlencoded::to_string(&json);
-
-    let body;
-    if result.is_ok() {
-        body = result.ok().unwrap();
-    } else {
-        return Err(result::OperationResult::new(
-            None,
-            result::ResultCode::ERROR,
-            Some(result.err().unwrap().to_string()),
-        ));
-    }
-
-    let result = match utils::build_url(endpoint) {
-        Ok(url) => utils::post_server(url, Some(body), None).await,
+    match utils::build_url(endpoint) {
+        Ok(url) => utils::post_form_server(url, Some(input.into()), None).await,
         Err(e) => Err(e),
-    };
-
-    return result;
+    }
 }
 
 #[tauri::command]

@@ -54,13 +54,19 @@ pub async fn get_messages(
 #[tauri::command]
 pub async fn get_latest_messages(
     channel_id: i32,
-    amount: i32,
+    amount: Option<i32>,
     token: String,
 ) -> Result<result::OperationResult, result::OperationResult> {
     let endpoint = format!("/channels/{}/messages/history", channel_id);
-    let config = HistoryConfig::new(Some(30), None, None);
-    let config = serde_json::to_string(&config).unwrap();
 
+    let config;
+
+    if amount.is_some() {
+        config = HistoryConfig::new(amount, None, None);
+    } else {
+        config = HistoryConfig::new(Some(30), None, None);
+    }
+    let config = serde_json::to_string(&config).unwrap();
     let endpoint = utils::build_url(endpoint)?;
-    utils::post_server(endpoint, config, None).await
+    utils::post_server(endpoint, Some(config), Some(token)).await
 }

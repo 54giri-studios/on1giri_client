@@ -125,6 +125,28 @@ pub async fn post_server(
     handle_response(call.send().await).await
 }
 
+
+
+pub async fn post_form_server(
+    url: reqwest::Url,
+    form: Option<Vec<(String, String)>>,
+    token: Option<String>,
+) -> Result<result::OperationResult, result::OperationResult> {
+    let client = reqwest::Client::new();
+
+    let mut call = client.post(url).header("Content-type", "application/json");
+
+    if let Some(f) = form {
+        call = call.form(&f);
+    }
+
+    if let Some(tok) = token {
+        call = call.header("AUTHORIZATION", format!("Bearer {}", tok));
+    }
+
+    handle_response(call.send().await).await
+}
+
 #[cfg(test)]
 mod test {
 

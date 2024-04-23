@@ -11,7 +11,7 @@ pub mod message;
 pub mod result;
 pub mod user;
 pub mod utils;
-use tauri_plugin_log::{LogTarget};
+use tauri_plugin_log::LogTarget;
 
 fn main() {
     dotenv().ok();
@@ -32,6 +32,7 @@ fn main() {
             channel::get_channel_users,
             guild::get_guild_channels,
             guild::add_user_to_guild,
+            guild::create_guild,
             message::get_messages,
             message::get_latest_messages,
             user::login,

@@ -112,7 +112,8 @@ pub async fn post_server(
 ) -> Result<result::OperationResult, result::OperationResult> {
     let client = reqwest::Client::new();
 
-    let mut call = client.post(url).json(&body);
+    let mut call = client.post(url).header("Content-type", "application/json").body(body);
+
     if let Some(tok) = token {
         call = call.header("AUTHORIZATION", format!("Bearer {}", tok));
     }

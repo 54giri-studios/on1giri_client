@@ -216,7 +216,7 @@ pub async fn get_channel_users(
     channel_id: i32,
     token: String,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = format!("/channel/{}", channel_id);
+    let endpoint = format!("/channels/{}/members", channel_id);
 
     match utils::build_url(endpoint.as_str()) {
         Ok(url) => utils::fetch_data(url, token).await,

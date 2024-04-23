@@ -1,18 +1,23 @@
 :root {
     font-size: 20px;
     -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    
     --main-color: rgb(0, 48, 97);
     --main-color-transparent: rgb(58, 77, 96, .7);
-
+    
     --server-default-color: rgb(130, 0, 0);
-
+    
     --text-input-box-color: rgb(0, 20, 100);
-
+    
     --conversations-color: rgb(0, 33, 66);
     --conversations-color-hover: rgb(0, 48, 95);
     --conversations-color-selected:rgb(0, 59, 117);
-
+    
     --text-hover-color: rgb(30, 56, 82);
+
+    --main-text-color: rgb(255,255,255);
     --unimportant-text-color: rgb(92, 92, 92);
 
     --main-scrollbar-color: rgb(1, 0, 63);
@@ -92,20 +97,34 @@ body> div, form {
 .tooltip .tooltiptext {
     position: absolute;
     visibility: hidden;
+    opacity: 0;
     width: fit-content;
     background-color: black;
-    color: #fff;
+    color: var(--main-text-color);
     text-align: center;
     padding: 5px 0;
+    border: 2px;
     border-radius: 6px;
     border-style: solid;
-    border-width: 5px;
-    border-color: black;
+    border-color: transparent;
     z-index: 1;
-    top: 30px;
-    left: 105%;
+    left: 110%;
+
+    transition: opacity 500ms;
+  }
+
+  .tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    border-width: 5px;
+    margin-top: -5px;
+    border-style: solid;
+    border-color:  transparent rgb(0, 0, 0) transparent transparent ;
   }
   
   .tooltip:hover .tooltiptext {
+    opacity: 1;
     visibility: visible;
   }

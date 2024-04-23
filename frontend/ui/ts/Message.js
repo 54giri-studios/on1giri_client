@@ -1,14 +1,15 @@
 class Message {
     constructor(content, date, author, id) {
         this.content = content;
-        this.author = author; // struct user
+        this.author = author; // struct user 
         this.date = date;
         this.author = author;
         this.id = id;
     }
 
     display() {
-
+        let associatedMemberButton = document.getElementById("member" + this.author.id);
+        
         let messageBox = document.createElement("div");
         messageBox.className = "message";
         messageBox.id = "message" + this.id;
@@ -22,26 +23,27 @@ class Message {
         
         let infoBox = document.createElement("div");
         infoBox.className = "messageMetadata";
-
+        
         let username = document.createElement("div");
         username.className = "username";
+        username.style.color = associatedMemberButton.querySelector(".memberName").style.color;
         username.innerText = this.author.username;
-        username.addEventListener("click", async ()=>await this.author.display(this.author), false);
+        username.addEventListener("click", ()=> associatedMemberButton.click(), false);
         let dateWrapper = document.createElement("div");
         dateWrapper.className = "dateWrapper";
         let date = document.createElement("small");
         date.className = "date";
         if (this.date.getDay()==new Date(Date.now()).getDay()){
-
+            
             date.innerText = this.date.toLocaleTimeString();
         } else {
             date.innerText = this.date.toLocaleDateString();
         }
         dateWrapper.appendChild(date);
-
+        
         infoBox.appendChild(username);
         infoBox.appendChild(dateWrapper);
-
+        
 
         let content = document.createElement("p");
         content.className = "messageContent"
@@ -60,6 +62,7 @@ class Message {
             p.textContent = parseInitials(this.author.username);
             pp.appendChild(p);
         }
+        pp.addEventListener("click", ()=> associatedMemberButton.click(), false);
 
         
         let simpleTime = document.createElement("small");

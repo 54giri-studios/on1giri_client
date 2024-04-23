@@ -148,7 +148,13 @@ async function loadChannelMessages(e, channelid) {
         await loadChannelUsers(channelid);
         invoke("get_latest_messages", {channelId: channelid, amount: 30, token: getCookieValue("TOKEN")}).then((result)=>{
             for (const message of result.content) {
-                let author = new User(message.author.id, message.author.username, message.author.discriminator, message.author.last_check_in, message.author.picture, message.author.creation_date);
+                let author = new User(message.author.id,
+                                     message.author.username, 
+                                     message.author.discriminator, 
+                                     message.author.last_check_in,
+                                     message.author.picture, 
+                                     message.author.creation_date, 
+                                     message.author.description);
                 let content = message.content;
                 let date = new Date(message.creation_date);
                 let id = message.id;
@@ -170,9 +176,10 @@ async function loadChannelMessages(e, channelid) {
 async function loadChannelUsers(channelid) {
     channelMembers.textContent = "- Channel Members -";
     invoke("get_channel_users", {channelId: channelid, token:getCookieValue("TOKEN")}).then((result)=>{
-        for (user in result.content) {
-            let userBlock = new UserButton(user.name, user.id, user.connectionStatus, user.connectionMessage);
-            channelMembers.appendChild(userBlock.display());
+        for (const user of result.content) {
+            let userBlock = new User(user.id, user.username, user.discriminator, user.last_check_in, user.picture, user.creation_date, user.description);
+            let member = new Member(userBlock, user.roles);
+            channelMembers.appendChild(member.display(member));
         }
     }).catch((response)=>{
         console.log(response)

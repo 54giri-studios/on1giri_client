@@ -18,6 +18,9 @@
     border: none;
     padding: none;
     transition: border-radius 300ms;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .server:hover {
@@ -38,4 +41,5 @@
 .server>h1{
     color: white;
     text-align: center;
+    margin: 0;
 }

@@ -1,6 +1,6 @@
 
 #channel-members {
-    width: 200px;
+    width: 250px;
     text-align: center;
     display: none;
     justify-content: flex-start;
@@ -10,6 +10,66 @@
     flex-grow: 0;
     flex-shrink: 0;
     overflow-y: scroll;
+    align-items: center;
+}
+
+.memberButton {
+    display: flex;
+    justify-content: left;
+    flex-direction: row;
+    border-radius: 10px;
+    height: 50px;
+    width: 95%;
+    border-width: 5px;
+}
+
+.memberButton .rwrapper {
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 1;
+    text-align: left;
+    overflow: hidden;
+}
+
+.memberButton .lwrapper {
+    padding-right: 5px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: 100%;
+    width: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.memberButton .profilePicture {
+    height: 45px;
+    width: 45px;
+    border-radius: 23px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.memberButton:hover {
+    background-color: var(--text-hover-color);
+}
+
+.memberName {
+    margin: 0;
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
+    overflow: hidden;
+    padding-bottom: 5px;
+}
+
+.connexionMessage {
+    color: var(--unimportant-text-color);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    text-wrap: nowrap;
 }
 
 .userButton {

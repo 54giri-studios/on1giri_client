@@ -30,6 +30,7 @@ fn main() {
             channel::subscribe,
             channel::send_message,
             channel::get_channel_users,
+            channel::create_channel,
             guild::get_guild_channels,
             guild::add_user_to_guild,
             guild::create_guild,

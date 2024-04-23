@@ -11,10 +11,29 @@ pub struct ChannelState {
     pub state: Mutex<HashMap<i32, CancellationToken>>,
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
+struct NewChannel {
+    guild_id: i32,
+    name: String, 
+    kind: String,
+}
+
+impl NewChannel {
+    pub fn new(guild_id: i32, name: String, kind: String) -> Self {
+        Self {
+            guild_id,
+            name,
+            kind,
+        }
+    }
+}
+
+
 async fn verify_server_is_up(url: tauri::Url) -> Option<result::OperationResult> {
     match reqwest::get(url).await {
         Ok(r) => {
             if r.status().is_server_error() {
+                warn!("Server is down");
                 return Some(result::OperationResult::new(
                     None,
                     result::ResultCode::ERROR,
@@ -222,4 +241,16 @@ pub async fn get_channel_users(
         Ok(url) => utils::fetch_data(url, token).await,
         Err(e) => Err(e),
     }
+}
+
+
+#[tauri::command]
+pub async fn create_channel(guild_id: i32, name: String, kind: String, token: String) -> Result<result::OperationResult, result::OperationResult> {
+    
+    let endpoint = "/channels/create";
+    let new_channel = NewChannel::new(guild_id, name, kind);
+    let new_channel = serde_json::to_string(&new_channel).unwrap();
+    let endpoint = utils::build_url(endpoint)?;
+
+    utils::post_server(endpoint, Some(new_channel), Some(token)).await
 }

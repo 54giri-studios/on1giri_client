@@ -41,8 +41,8 @@ pub async fn add_user_to_guild(guild_id: i32, user_id: i32, token: String) -> Re
 pub async fn create_guild(name: String, owner_id: i32, description: String, token: String) -> Result<result::OperationResult, result::OperationResult> {
     let endpoint = "/guilds/create";
     let new_guild = Guild::new(name, owner_id, description);
-    let config = serde_json::to_string(&new_guild).unwrap();
+    let new_guild = serde_json::to_string(&new_guild).unwrap();
     let endpoint = utils::build_url(endpoint)?;
 
-    utils::post_server(endpoint, config, Some(token)).await
+    utils::post_server(endpoint, Some(new_guild), Some(token)).await
 }

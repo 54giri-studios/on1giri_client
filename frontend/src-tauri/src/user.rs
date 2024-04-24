@@ -1,5 +1,28 @@
 use super::*;
-use std::collections::HashMap;
+
+#[derive(serde::Serialize, serde::Deserialize)]
+struct User {
+    username: String,
+    discrimator: i16,
+    picture: String,
+    description: String,
+}
+
+impl User {
+    pub fn new(
+        username: String,
+        discrimator: i16,
+        picture: String,
+        description: String,
+    ) -> Self {
+        Self {
+            username,
+            discrimator,
+            picture,
+            description,
+        }
+    }
+}
 
 #[tauri::command]
 pub async fn login(
@@ -16,7 +39,10 @@ pub async fn login(
         };
     }
 
-    let input = [(String::from("username"), username.unwrap()), (String::from("password"), password.unwrap())];
+    let input = [
+        (String::from("username"), username.unwrap()),
+        (String::from("password"), password.unwrap()),
+    ];
 
     match utils::build_url(endpoint) {
         Ok(url) => utils::post_form_server(url, Some(input.into()), None).await,
@@ -27,29 +53,23 @@ pub async fn login(
 #[tauri::command]
 pub async fn create_user(
     username: String,
-    email: String,
+    discriminator: i16,
     description: String,
     picture: String,
 ) -> Result<result::OperationResult, result::OperationResult> {
     let endpoint = "/user/create";
 
-    let mut body = HashMap::new();
-    body.insert("username", username);
-    body.insert("email", email);
-    body.insert("description", description);
-    body.insert("picture", picture);
+    let new_user = User::new(username, discriminator, description, picture);
 
-    if let Ok(body) = utils::convert_to_json_str(body) {
-        match utils::build_url(endpoint) {
-            Ok(u) => utils::post_server(u, Some(body), None).await,
-            Err(e) => Err(e),
-        }
-    } else {
-        return Err(result::OperationResult::new(
-            None,
-            result::ResultCode::ERROR,
-            Some("Cannot convert these values to json string".to_string()),
-        ));
+    let body = serde_json::to_string(&new_user);
+
+    let Ok(body) = body else {
+        return Err(result::OperationResult::new(None, result::ResultCode::ERROR, Some("Cannot convert the user metadata to json, where not able to send it to the backend".into())));
+    };
+
+    match utils::build_url(endpoint) {
+        Ok(u) => utils::post_server(u, Some(body), None).await,
+        Err(e) => Err(e),
     }
 }
 
@@ -143,7 +163,7 @@ mod test {
 
         match create_user(
             "username".into(),
-            "user@gmail.com".into(),
+            1337,
             "Etudiant en info".into(),
             "user23457525.png".into(),
         )
@@ -194,7 +214,6 @@ mod test {
         }
     }
 
-
     #[tokio::test]
     async fn test_login_user_with_wrong_url() {
         let server = MockServer::start();
@@ -212,9 +231,7 @@ mod test {
                 assert_eq!(res.code, result::ResultCode::ERROR);
                 assert_eq!(
                     res.error_msg,
-                    Some(
-                        "Client error: verify your request".to_string()
-                    )
+                    Some("Client error: verify your request".to_string())
                 );
             }
             Ok(e) => {
@@ -222,6 +239,4 @@ mod test {
             }
         }
     }
-
-
 }

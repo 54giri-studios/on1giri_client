@@ -85,7 +85,6 @@ async fn listen_and_emit_messages(
         match event {
             Ok(message) => {
                 info!("----------------- RECEIVED SOMETHING : {} ------------------", message.to_string());
-                //let mess: String = serde_json::from_str(message.data.as_str()).expect("should be able to convert");
                 let mess = serde_json::to_value(message.data.as_str());
                 if let Ok(mess) = mess {
                     app.emit_all("new_message", mess).expect("Cannot send to front");

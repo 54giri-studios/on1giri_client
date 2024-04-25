@@ -1,10 +1,10 @@
 use super::*;
 use eventsource::reqwest::Client;
+use log::{info, warn};
 use std::collections::HashMap;
 use tauri::{AppHandle, Manager, State};
 use tokio::sync::Mutex;
 use tokio_util::sync::CancellationToken;
-use log::{info, warn};
 
 // Struct that will store the Cancellationtokens // corresponding to the different channels that the client // subscribed to
 pub struct ChannelState {
@@ -14,7 +14,7 @@ pub struct ChannelState {
 #[derive(serde::Serialize, serde::Deserialize)]
 struct NewChannel {
     guild_id: i32,
-    name: String, 
+    name: String,
     kind: String,
 }
 
@@ -27,7 +27,6 @@ impl NewChannel {
         }
     }
 }
-
 
 async fn verify_server_is_up(url: tauri::Url) -> Option<result::OperationResult> {
     match reqwest::get(url).await {
@@ -79,20 +78,26 @@ async fn listen_and_emit_messages(
     let client = Client::new(url);
 
     for event in client {
+        info!("listening--------------------------------");
         if token.is_cancelled() {
             break;
         }
         match event {
             Ok(message) => {
-                info!("----------------- RECEIVED SOMETHING : {} ------------------", message.to_string());
+                info!(
+                    "----------------- RECEIVED SOMETHING : {} ------------------",
+                    message.to_string()
+                );
                 let mess = serde_json::to_value(message.data.as_str());
                 if let Ok(mess) = mess {
-                    app.emit_all("new_message", mess).expect("Cannot send to front");
+                    app.emit_all("new_message", mess)
+                        .expect("Cannot send to front");
                 };
             }
             Err(_) => (),
         }
     }
+
     Ok(())
 }
 
@@ -117,8 +122,9 @@ pub async fn subscribe(
     app: AppHandle,
     state: State<'_, ChannelState>,
 ) -> Result<result::OperationResult, result::OperationResult> {
-
     let url = get_and_parse_url()?;
+
+    info!("\n\n------------------------------------- SUBSCRIBE TO THE CHANNEL {} ------------------------ \n\n", channel_id);
 
     if let Some(e) = verify_server_is_up(url.clone()).await {
         return Err(e);
@@ -140,28 +146,31 @@ pub async fn subscribe(
     tokens.insert(channel_id, CancellationToken::new());
 
     let token = tokens.get(&channel_id);
-    match listen_and_emit_messages(
+
+    tokio::spawn(listen_and_emit_messages(
         url,
         channel_id,
         app,
         token
             .expect(format!("Token registered for channel {} is invalid", channel_id).as_str())
             .clone(),
-    )
-    .await
-    {
-        Ok(_) => Ok(result::OperationResult::new(
-            Some(
-                serde_json::from_str(
-                    format!(
-                        "Stopped listening for messages from channel: {}",
-                        channel_id
-                    )
-                    .as_str(),
+    ));
+
+    Ok(result::OperationResult::new(
+        Some(
+            serde_json::from_str(
+                format!(
+                    "Stopped listening for messages from channel: {}",
+                    channel_id
                 )
-                .unwrap(),
-            ),
-            result::ResultCode::SUCCESS,
+                .as_str(),
+            )
+            .unwrap(),
+        ),
+        result::ResultCode::SUCCESS,
+        None,
+    ))
+}
             None,
         )),
         Err(e) => Err(e),
@@ -200,7 +209,9 @@ pub async fn send_message(
     match response {
         r if r.status().is_success() => {
             return Ok(result::OperationResult::new(
-                Some(serde_json::Value::String("Message sent successfully".to_string())),
+                Some(serde_json::Value::String(
+                    "Message sent successfully".to_string(),
+                )),
                 result::ResultCode::SUCCESS,
                 None,
             ));
@@ -242,10 +253,13 @@ pub async fn get_channel_users(
     }
 }
 
-
 #[tauri::command]
-pub async fn create_channel(guild_id: i32, name: String, kind: String, token: String) -> Result<result::OperationResult, result::OperationResult> {
-    
+pub async fn create_channel(
+    guild_id: i32,
+    name: String,
+    kind: String,
+    token: String,
+) -> Result<result::OperationResult, result::OperationResult> {
     let endpoint = "/channels/create";
     let new_channel = NewChannel::new(guild_id, name, kind);
     let new_channel = serde_json::to_string(&new_channel).unwrap();

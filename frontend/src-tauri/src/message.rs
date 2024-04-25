@@ -55,6 +55,8 @@ pub async fn get_messages(
 pub async fn get_latest_messages(
     channel_id: i32,
     amount: Option<i32>,
+    before: Option<DateTime<Utc>>,
+    after: Option<DateTime<Utc>>,
     token: String,
 ) -> Result<result::OperationResult, result::OperationResult> {
     let endpoint = format!("/channels/{}/messages/history", channel_id);
@@ -62,9 +64,9 @@ pub async fn get_latest_messages(
     let config;
 
     if amount.is_some() {
-        config = HistoryConfig::new(amount, None, None);
+        config = HistoryConfig::new(amount, before, after);
     } else {
-        config = HistoryConfig::new(Some(30), None, None);
+        config = HistoryConfig::new(Some(30), before, after);
     }
     let config = serde_json::to_string(&config).unwrap();
     let endpoint = utils::build_url(endpoint)?;

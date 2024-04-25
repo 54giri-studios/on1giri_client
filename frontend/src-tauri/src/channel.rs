@@ -171,10 +171,38 @@ pub async fn subscribe(
         None,
     ))
 }
+
+#[tauri::command]
+pub async fn unsubscribe(
+    channel_id: i32,
+    state: State<'_, ChannelState>,
+) -> Result<result::OperationResult, result::OperationResult> {
+    let tokens = state.state.lock().await;
+    let token = tokens.get(&channel_id);
+
+    if token.is_none() {
+        return Err(result::OperationResult::new(
             None,
-        )),
-        Err(e) => Err(e),
+            result::ResultCode::ERROR,
+            Some(format!(
+                "The user didn't subscribe to this channel before {}",
+                channel_id
+            )),
+        ));
     }
+
+    let token = token.unwrap();
+
+    token.cancel();
+
+    Ok(result::OperationResult::new(
+        Some(serde_json::Value::String(format!(
+            "Success, the user will no more receive messages from this channel: {}",
+            channel_id
+        ))),
+        result::ResultCode::SUCCESS,
+        None,
+    ))
 }
 
 #[tauri::command]

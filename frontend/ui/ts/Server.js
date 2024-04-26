@@ -1,9 +1,20 @@
-async function createServer(e, name) {
+async function createServer(e, name, description, authorid) {
     e.preventDefault();
-    // invoke the createServer
+    invoke("create_guild", {name: name, ownerId:authorid, description:description, token:getCookieValue("TOKEN")}).then(async (result)=> {
+        console.log(result);
+        loadServerButtons();
+    }).catch((result)=>{
+        console.log("failed to create guild", result);
+    })
 }
 
-async function createChannel(e, name) {
+async function createChannel(e,serverid, name) {
     e.preventDefault();
-    // invoke the createChannel
+    invoke("create_channel", {guildId:serverid, name:name, kind:"text", token:getCookieValue("TOKEN")}).then(async (result)=> {
+        console.log(result);
+        selectedServer = undefined;
+        document.getElementById("server"+serverid).click();
+    }).catch((result)=>{
+        console.log("failed to create guild", result);
+    })
 }

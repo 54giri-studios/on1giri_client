@@ -123,7 +123,28 @@ class Message {
     }
 }
 
-async function fetchMoreMsg(msgDate) {
+async function fetchMoreMsg(channelid, msgDate) {
     // call to get_message
-    console.log("fetching msg before", msgDate);
+    invoke("get_latest_messages", {channelId:channelid, amount:30, before:msgDate, token:getCookieValue("TOKEN")}).then(async (result)=> {
+        console.log("more!!!!", result)
+        for (const message of result.content) {
+            let author = new User(message.author.id,
+                                 message.author.username,
+                                 message.author.discriminator,
+                                 message.author.last_check_in,
+                                 message.author.picture,
+                                 message.author.creation_date,
+                                 message.author.description);
+            let content = message.content;
+            let date = new Date(message.creation_date);
+            let id = message.id;
+            if (document.getElementById("message"+id)!=undefined) {
+                continue;
+            }
+            new Message(content, date, author, id).display();
+            scrollDown();
+        }
+    }).catch((result)=>{
+        console.log("failed to get more",result);
+    })
 }

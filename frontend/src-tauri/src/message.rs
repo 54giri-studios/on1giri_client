@@ -66,7 +66,7 @@ pub async fn get_latest_messages(
     if amount.is_some() {
         config = HistoryConfig::new(amount, before, after);
     } else {
-        config = HistoryConfig::new(Some(30), before, after);
+        config = HistoryConfig::new(Some(50), before, after);
     }
     let config = serde_json::to_string(&config).unwrap();
     let endpoint = utils::build_url(endpoint)?;

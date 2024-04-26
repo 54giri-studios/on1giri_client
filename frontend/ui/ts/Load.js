@@ -25,6 +25,7 @@ let channelId = 0;
 let loginForm;
 let createAccountForm;
 let channelCreateForm;
+let serverCreateForm;
 let logoutBtn;
 
 function onReady() {
@@ -32,8 +33,12 @@ function onReady() {
   let convochat = document.getElementById("convo-chat-wrapper");
   convochat.addEventListener("scroll", async (e)=>{
     if (convochat.scrollTop==0) {
-      let msgDate = new Date(convochat.firstElementChild.firstElementChild.getAttribute("date"));
-      fetchMoreMsg(msgDate);
+      if ( convochat.firstElementChild.firstElementChild==undefined) {
+        fetchMoreMsg(channelId,undefined);
+      } else {
+        let msgDate = new Date(convochat.firstElementChild.firstElementChild.getAttribute("date"));
+        fetchMoreMsg(channelId, msgDate);
+      }
     }
   })
   channelMembers = document.getElementById("channel-members");
@@ -98,7 +103,7 @@ function onReady() {
   subscribe = document.getElementById("subscribe");
 
 
-  let serverCreateForm = document.getElementById("server-create-form")
+  serverCreateForm = document.getElementById("server-create-form")
   document.getElementById("createServer").addEventListener("click", async ()=>{
     serverCreateForm.style.display = "flex";
     serverCreateForm.firstElementChild.addEventListener("click", async (e)=>{
@@ -107,29 +112,21 @@ function onReady() {
     serverCreateForm.addEventListener("click", async ()=>serverCreateForm.style.display = "none")
   })
   serverCreateForm.addEventListener("submit", async (e)=>{
-    let name = serverCreateForm.firstElementChild.value;
-    await createServer(e, name);
+    e.preventDefault();
+    let name = serverCreateForm.querySelector("form").firstElementChild.value;
+    let description = serverCreateForm.querySelector("form").firstElementChild.nextElementSibling.value;
+    await createServer(e, name, description, 0);
     serverCreateForm.firstElementChild.value = "";
     serverCreateForm.style.display = "none";
   })
 
-  channelCreateForm = document.getElementById("channel-create-form")
-  channelCreateForm.firstElementChild.addEventListener("click", async (e)=>{
-    e.stopPropagation();
-  })
-  channelCreateForm.addEventListener("click", async ()=>channelCreateForm.style.display = "none")
-  channelCreateForm.addEventListener("submit", async (e)=>{
-    let name = channelCreateForm.firstElementChild.value;
-    await createChannel(e, name);
-    channelCreateForm.firstElementChild.value = "";
-    channelCreateForm.style.display = "none";
-  })
+  
   /*to be removed after rust login is fixed*/
   if (getCookieValue("TOKEN") != undefined) {
     // token presend, try loging in with token
     // should invoke login
-    loginForm.style.display = "none";
-    afterLogin();
+    // loginForm.style.display = "none";
+    // afterLogin();
   }
 }
 
@@ -145,13 +142,13 @@ async function login(e) {
     return;
   }
   invoke("login", {username:usernameInput, password:passwordInput}).then((result)=>{
+    console.log(result)
     document.cookie = "TOKEN="+result.content.token;
     userid = result.userId;
     form.style.display = "none";
     afterLogin();
   }).catch((response)=>{
-    document.cookie = "TOKEN=AUHIDUHEZ";
-    form.style.display = "none";
+    
     afterLogin();
     console.log("Failed to login");
   })

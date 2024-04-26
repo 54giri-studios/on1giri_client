@@ -159,11 +159,7 @@ pub async fn subscribe(
     Ok(result::OperationResult::new(
         Some(
             serde_json::from_str(
-                format!(
-                    "Stopped listening for messages from channel: {}",
-                    channel_id
-                )
-                .as_str(),
+                "{\"message\":\"left channel\"}"
             )
             .unwrap(),
         ),

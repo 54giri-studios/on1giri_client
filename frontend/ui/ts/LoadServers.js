@@ -62,7 +62,7 @@ class ChannelButton {
         innerButton.addEventListener("click", async (e)=>{
             document.getElementById("convo").style.display = "flex";
             channelMembers.style.display = "flex";
-            await loadChannelMessages(e, this.id);
+            loadChannelMessages(e, this.id);
         }, false);
         button.appendChild(innerButton);
         
@@ -80,6 +80,9 @@ class ChannelButton {
 async function loadServerButtons() {
     invoke("get_user_guilds", {userId: userId, token:getCookieValue("TOKEN")}).then((result)=>{
         for (const server of result.content) {
+            if (document.getElementById("server"+server.id)!= undefined) {
+                continue;
+            }
             let serverid = server.id;
             let button = new ServerButton(server.name, serverid, "");
             button = button.display();
@@ -105,13 +108,28 @@ async function loadServerChannels(serverid) {
         selectedServer = document.getElementById("server" + serverid);
         clearChannels();
     }
-    let createChannelButton = document.createElement("button");
-    createChannelButton.innerText = "New Channel";
-    createChannelButton.addEventListener("click", async ()=>{
-        channelCreateForm.style.display = "flex";
+
+    // create channel section
+    channelCreateForm = document.getElementById("channel-create-form")
+
+    channelCreateForm.firstElementChild.addEventListener("click", async (e)=>{
+        e.stopPropagation();
     })
-    serverchannels.appendChild(createChannelButton);
+    channelCreateForm.addEventListener("click", async ()=>channelCreateForm.style.display = "none")
+    channelCreateForm.addEventListener("submit", async (e)=>{
+        let name = channelCreateForm.querySelector("form").firstElementChild.value;
+        await createChannel(e, serverid, name);
+        channelCreateForm.firstElementChild.value = "";
+        channelCreateForm.style.display = "none";
+    })
+        let createChannelButton = document.createElement("button");
+        createChannelButton.innerText = "New Channel";
+        createChannelButton.addEventListener("click", async ()=>{
+            channelCreateForm.style.display = "flex";
+        })
+        serverchannels.appendChild(createChannelButton);
     
+    // load channels
     invoke("get_guild_channels", {guildId: serverid, token: getCookieValue("TOKEN")}).then((result)=>{
         let channelList = result.content;
 
@@ -149,11 +167,11 @@ async function loadChannelMessages(e, channelid) {
         invoke("get_latest_messages", {channelId: channelid, amount: 30, token: getCookieValue("TOKEN")}).then((result)=>{
             for (const message of result.content) {
                 let author = new User(message.author.id,
-                                     message.author.username, 
-                                     message.author.discriminator, 
+                                     message.author.username,
+                                     message.author.discriminator,
                                      message.author.last_check_in,
-                                     message.author.picture, 
-                                     message.author.creation_date, 
+                                     message.author.picture,
+                                     message.author.creation_date,
                                      message.author.description);
                 let content = message.content;
                 let date = new Date(message.creation_date);
@@ -165,7 +183,7 @@ async function loadChannelMessages(e, channelid) {
                 scrollDown();
             }
         }).catch((result)=>{
-            console.log("failed to get guild latest messages");
+            console.log(result, "failed to get guild latest messages");
         })
     }).catch((response)=>{
         console.log("failed to subscribe to channel");
@@ -175,14 +193,16 @@ async function loadChannelMessages(e, channelid) {
 
 async function loadChannelUsers(channelid) {
     channelMembers.textContent = "- Channel Members -";
+    console.log("users");
     invoke("get_channel_users", {channelId: channelid, token:getCookieValue("TOKEN")}).then((result)=>{
+        console.log(result)
         for (const user of result.content) {
             let userBlock = new User(user.id, user.username, user.discriminator, user.last_check_in, user.picture, user.creation_date, user.description);
             let member = new Member(userBlock, user.roles);
             channelMembers.appendChild(member.display(member));
         }
     }).catch((response)=>{
-        console.log(response)
+        console.log("failed to load users")
     })
 }
 

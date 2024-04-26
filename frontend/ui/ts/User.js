@@ -71,14 +71,14 @@ class UserButton {
 class roleBadge {
     constructor(name, color) {
         this.name = name;
-        this.color = "red";
+        this.color = color;
     }
 
     display() {
         let badge = document.createElement("div");
         badge.className = "roleBadge";
 
-        let color = document.createElement("div");
+        let color = document.createElement("span");
         color.className = "roleColor";
 
         let name = document.createElement("p");
@@ -166,8 +166,23 @@ class Member {
         bannerTop.appendChild(name);
         bannerTop.appendChild(status);
 
-        bannerWrapper.appendChild(bannerTop);
+        let bannerRoles = document.createElement("div");
+        bannerRoles.className = "rolePool";
+        for (const role of member.roles) {
+            let Role = new roleBadge(role.name, role.color);
+            bannerRoles.appendChild(Role.display());
+        }
+        let newRoleButton = document.createElement("button");
+        newRoleButton.textContent = "add role";
+        newRoleButton.addEventListener("click", async (e)=>{
+            bannerSuperWrapper.style.display = "none";
+            await createRole(e);
+        })
+        bannerRoles.appendChild(newRoleButton);
 
+
+        bannerWrapper.appendChild(bannerTop);
+        bannerWrapper.appendChild(bannerRoles);
 
         return bannerSuperWrapper;
     }
@@ -192,4 +207,26 @@ class User {
     displayButton(user) {
 
     }
+}
+
+async function createRole(e) {
+    e.preventDefault();
+    let formWrapper = document.getElementById("role-create-form");
+    formWrapper.style.display = "flex";
+    formWrapper.addEventListener("click", ()=>formWrapper.style.display = "none");
+    formWrapper.firstElementChild.addEventListener("click", (e)=>e.stopPropagation());
+    let form = formWrapper.firstElementChild.firstElementChild;
+    form.addEventListener("submit", async (e)=>{
+        e.preventDefault();
+        let name = form.firstElementChild.ariaValueMax;
+        let color = "#ff0000";
+        let canRead = form.firstElementChild.nextElementSibling.checked;
+        let canWrite = form.firstElementChild.nextElementSibling.nextElementSibling.checked;
+        await createRoleSubmit(name, color, channelid, serverid, canRead, canWrite);
+        form.style.display = "none";
+    })
+}
+
+async function createRoleSubmit(name, color, channelid, serverid, canRead, canWrite) {
+    //should invoke rust command
 }

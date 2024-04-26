@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="style/userList.css">
     <link rel="stylesheet" href="style/popup.css">
     <link rel="stylesheet" href="style/message.css">
+    <link rel="stylesheet" href="style/roles.css">
     <script src="ts/Load.js"></script>
     <script src="./ts/LoadServers.js"></script>
     <script src="ts/RecieveMessage.js"></script>
@@ -71,6 +72,16 @@
           <form >
             <input type="text" placeholder="server name">
             <input type="text" placeholder="server description">
+            <button type="submit">create</button>
+          </form>
+        </div>
+      </div>
+      <div id="role-create-form" class="popupForm">
+        <div id="form-wrapper">
+          <form >
+            <input type="text" placeholder="role name">
+            <input type="checkbox" placeholder="can read">
+            <input type="checkbox" placeholder="can write">
             <button type="submit">create</button>
           </form>
         </div>

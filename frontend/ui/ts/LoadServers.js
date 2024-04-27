@@ -114,22 +114,6 @@ async function loadServerChannels(serverid) {
         clearMessages();
         serverObj.classList.add("server-selected");
     }
-
-    // create channel section
-    channelCreateForm = document.getElementById("channel-create-form")
-
-    channelCreateForm.firstElementChild.addEventListener("click", async (e)=>{
-        e.stopPropagation();
-    })
-    channelCreateForm.addEventListener("click", async ()=>channelCreateForm.style.display = "none")
-    channelCreateForm.addEventListener("submit", async (e)=>{
-        let name = channelCreateForm.querySelector("form").firstElementChild.value;
-        await createChannel(e, serverid, name);
-        channelCreateForm.firstElementChild.value = "";
-        channelCreateForm.style.display = "none";
-        serverObj.classList.remove("server-selected");
-        setTimeout(async ()=>await loadServerChannels(serverid), 500);
-    })
         let createChannelButton = document.createElement("button");
         createChannelButton.innerText = "New Channel";
         createChannelButton.addEventListener("click", async ()=>{

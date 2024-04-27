@@ -102,7 +102,25 @@ function onReady() {
 
   subscribe = document.getElementById("subscribe");
 
+  // create channel section
+  channelCreateForm = document.getElementById("channel-create-form")
 
+  channelCreateForm.firstElementChild.addEventListener("click", async (e)=>{
+      e.stopPropagation();
+  })
+  channelCreateForm.addEventListener("click", async ()=>channelCreateForm.style.display = "none")
+  if (typeof initNewChannel !== 'undefined') {
+      channelCreateForm.removeEventListener("submit", initNewChannel,false);
+  }
+  channelCreateForm.addEventListener("submit", async function initNewChannel(e){
+      let serverObj = document.querySelector(".server-selected");
+      let name = channelCreateForm.querySelector("form").firstElementChild.value;
+      await createChannel(e, parseInt(serverObj.getAttribute("serverid")), name);
+      channelCreateForm.firstElementChild.value = "";
+      channelCreateForm.style.display = "none";
+      serverObj.classList.remove("server-selected");
+      setTimeout(async ()=>await loadServerChannels(parseInt(serverObj.getAttribute("serverid"))), 500);
+  })
   serverCreateForm = document.getElementById("server-create-form")
   document.getElementById("createServer").addEventListener("click", async ()=>{
     serverCreateForm.style.display = "flex";

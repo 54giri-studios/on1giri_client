@@ -69,7 +69,7 @@ class UserButton {
 }
 
 class roleBadge {
-    constructor(name, color) {
+    constructor(name, color, id) {
         this.name = name;
         this.color = color;
     }
@@ -77,9 +77,11 @@ class roleBadge {
     display() {
         let badge = document.createElement("div");
         badge.className = "roleBadge";
+        
 
         let color = document.createElement("span");
         color.className = "roleColor";
+        color.style.background = this.color;
 
         let name = document.createElement("p");
         name.classList = "roleName";

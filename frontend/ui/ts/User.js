@@ -215,15 +215,25 @@ async function createRole(e) {
     formWrapper.style.display = "flex";
     formWrapper.addEventListener("click", ()=>formWrapper.style.display = "none");
     formWrapper.firstElementChild.addEventListener("click", (e)=>e.stopPropagation());
-    let form = formWrapper.firstElementChild.firstElementChild;
+    let form = formWrapper.firstElementChild.firstElementChild.nextElementSibling;
     form.addEventListener("submit", async (e)=>{
         e.preventDefault();
-        let name = form.firstElementChild.ariaValueMax;
-        let color = "#ff0000";
-        let canRead = form.firstElementChild.nextElementSibling.checked;
-        let canWrite = form.firstElementChild.nextElementSibling.nextElementSibling.checked;
+        let name = form.querySelector("#name").value;
+        let color = form.querySelector("#color").value;
+        if (color=="" || name=="") {
+            form.style.border = "2px solid red";
+            return;
+        }
+        form.querySelector("#name").value = "";
+        form.querySelector("#color").value = "";
+        let canRead = form.querySelector("#can-read").checked;
+        
+        let canWrite = form.querySelector("#can-write").checked;
+        console.log(canRead, canWrite)
+        let channelid = parseInt(document.getElementsByClassName("channel-selected")[0].getAttribute("channelid"));
+        let serverid = parseInt(document.getElementsByClassName("server-selected")[0].getAttribute("serverid"));
         await createRoleSubmit(name, color, channelid, serverid, canRead, canWrite);
-        form.style.display = "none";
+        formWrapper.style.display = "none";
     })
 }
 

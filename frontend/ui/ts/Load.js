@@ -113,8 +113,15 @@ function onReady() {
   })
   serverCreateForm.addEventListener("submit", async (e)=>{
     e.preventDefault();
-    let name = serverCreateForm.querySelector("form").firstElementChild.value;
-    let description = serverCreateForm.querySelector("form").firstElementChild.nextElementSibling.value;
+    serverCreateForm.querySelector("form").style.border = "none"
+    let name = serverCreateForm.querySelector("#name").value;
+    let description = serverCreateForm.querySelector("#description").value;
+    if (name=="" || description=="") {
+      serverCreateForm.querySelector("form").style.border = "2px solid red";
+      return;
+    }
+    serverCreateForm.querySelector("#name").value="";
+    serverCreateForm.querySelector("#description").value="";
     await createServer(e, name, description, 0);
     serverCreateForm.firstElementChild.value = "";
     serverCreateForm.style.display = "none";

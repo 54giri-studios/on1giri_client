@@ -8,7 +8,13 @@ class Message {
     }
 
     display() {
-        let associatedMemberButton = document.getElementById("member" + this.author.id);
+        console.log(document.getElementById("channel-members"));
+        let associatedMemberButton = document.getElementById("channel-members").querySelector("#member0");
+        console.log(associatedMemberButton);
+        
+        if (associatedMemberButton==undefined) {
+            return;
+        }
         
         let messageBox = document.createElement("div");
         messageBox.className = "message";

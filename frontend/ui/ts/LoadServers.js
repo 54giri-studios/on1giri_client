@@ -15,11 +15,11 @@ class ServerButton {
         
         let innerToolTip = document.createElement("span");
         innerToolTip.className = "tooltiptext";
-        innerToolTip.innerText = this.name
+        innerToolTip.innerText = this.name;
         button.appendChild(innerToolTip);
         
         button.id = "server" + this.id;
-        
+        button.setAttribute("serverid", this.id); 
         button.addEventListener("click", async ()=> await loadServerChannels(this.id));
         
         if (this.picture.length>0){
@@ -35,6 +35,9 @@ class ServerButton {
 }
 
 function parseInitials(name) {
+    if (name=="" || name==undefined) {
+        return "";
+    }
     let res = "";
     let list = name.split(" ");
     for (const word of list) {
@@ -69,6 +72,7 @@ class ChannelButton {
         button.className = "channel";
 
         button.id = "channel" + this.id;
+        button.setAttribute("channelid", this.id);
 
         serverchannels.appendChild(button);
 
@@ -95,18 +99,20 @@ async function loadServerButtons() {
 }
 
 async function loadServerChannels(serverid) {
-
-    if (selectedServer!=null) {
-        if (selectedServer === document.getElementById("server" + serverid)) {
-            //server was already selected, nothing to do here
-            return;
-        } else {
-            selectedServer = document.getElementById("server" + serverid);
-            clearChannels();
-        }
+    let serverObj = document.getElementById("server"+serverid);
+    if (serverObj.classList.contains("server-selected")) {
+        return;
     } else {
-        selectedServer = document.getElementById("server" + serverid);
+        let otherserver = document.getElementsByClassName("server-selected");
+        if (otherserver.length==0) {
+            // nothing to do
+        } else {
+            otherserver[0].classList.remove("server-selected");
+        }
         clearChannels();
+        clearChannelUsers();
+        clearMessages();
+        serverObj.classList.add("server-selected");
     }
 
     // create channel section
@@ -121,6 +127,8 @@ async function loadServerChannels(serverid) {
         await createChannel(e, serverid, name);
         channelCreateForm.firstElementChild.value = "";
         channelCreateForm.style.display = "none";
+        serverObj.classList.remove("server-selected");
+        setTimeout(async ()=>await loadServerChannels(serverid), 500);
     })
         let createChannelButton = document.createElement("button");
         createChannelButton.innerText = "New Channel";
@@ -143,48 +151,45 @@ async function loadServerChannels(serverid) {
 }
 
 async function loadChannelMessages(e, channelid) {
-    channelId = channelid;
-    if (selectedChannel!=null) {
-        if (selectedChannel === document.getElementById("channel" + channelid)) {
-            //channel was already selected, nothing to do here
-            return;
-        } else {
-            selectedChannel.classList.remove("channel-selected");
-            selectedChannel = document.getElementById("channel" + channelid);
-            selectedChannel.classList.add("channel-selected");
-            clearMessages();
-            clearChannelUsers();
-        }
+    let channelObj = document.getElementById("channel"+channelid);
+    if (channelObj.classList.contains("channel-selected")) {
+        return;
     } else {
-        selectedChannel = document.getElementById("channel" + channelid);
-        selectedChannel.classList.add("channel-selected");
-        clearMessages();
-        clearChannelUsers();
+        let otherChannels = document.getElementsByClassName("channel-selected");
+        if (otherChannels.length==0) {
+            // nothing to do
+        } else {
+            otherChannels[0].classList.remove("channel-selected");
+            clearChannelUsers();
+            clearMessages();
+        }
+        channelObj.classList.add("channel-selected");
     }
 
     get_in_channel(e).then(async (response)=>{
-        await loadChannelUsers(channelid);
-        invoke("get_latest_messages", {channelId: channelid, amount: 30, token: getCookieValue("TOKEN")}).then((result)=>{
-            for (const message of result.content) {
-                let author = new User(message.author.id,
-                                     message.author.username,
-                                     message.author.discriminator,
-                                     message.author.last_check_in,
-                                     message.author.picture,
-                                     message.author.creation_date,
-                                     message.author.description);
-                let content = message.content;
-                let date = new Date(message.creation_date);
-                let id = message.id;
-                if (document.getElementById("message"+id)!=undefined) {
-                    continue;
+        loadChannelUsers(channelid).then(async ()=>{
+            invoke("get_latest_messages", {channelId: channelid, amount: 30, token: getCookieValue("TOKEN")}).then((result)=>{
+                for (const message of result.content) {
+                    let author = new User(message.author.id,
+                        message.author.username,
+                        message.author.discriminator,
+                        message.author.last_check_in,
+                        message.author.picture,
+                        message.author.creation_date,
+                        message.author.description);
+                    let content = message.content;
+                    let date = new Date(message.creation_date);
+                    let id = message.id;
+                    if (document.getElementById("message"+id)!=undefined) {
+                        continue;
+                    }
+                    new Message(content, date, author, id).display();
+                    scrollDown();
                 }
-                new Message(content, date, author, id).display();
-                scrollDown();
-            }
-        }).catch((result)=>{
-            console.log(result, "failed to get guild latest messages");
-        })
+            }).catch((result)=>{
+                console.log("failed to get guild latest messages");
+            })
+        }).catch(()=>console.log("failed to load users"));
     }).catch((response)=>{
         console.log("failed to subscribe to channel");
     });
@@ -192,10 +197,7 @@ async function loadChannelMessages(e, channelid) {
 
 
 async function loadChannelUsers(channelid) {
-    channelMembers.textContent = "- Channel Members -";
-    console.log("users");
     invoke("get_channel_users", {channelId: channelid, token:getCookieValue("TOKEN")}).then((result)=>{
-        console.log(result)
         for (const user of result.content) {
             let userBlock = new User(user.id, user.username, user.discriminator, user.last_check_in, user.picture, user.creation_date, user.description);
             let member = new Member(userBlock, user.roles);
@@ -215,5 +217,5 @@ function clearMessages() {
 }
 
 function clearChannelUsers() {
-    channelMembers.textContent = "- Channel Members -";
+    channelMembers.textContent = "";
 }

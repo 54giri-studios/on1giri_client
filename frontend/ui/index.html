@@ -69,25 +69,35 @@
       </div>
       <div id="server-create-form" class="popupForm">
         <div id="form-wrapper">
+          <h3>Create Server</h2>
           <form >
-            <input type="text" placeholder="server name">
-            <input type="text" placeholder="server description">
+            <input type="text" id="name" placeholder="server name">
+            <input type="text" id="description" placeholder="server description">
             <button type="submit">create</button>
           </form>
         </div>
       </div>
       <div id="role-create-form" class="popupForm">
         <div id="form-wrapper">
+          <h3>Create Role for this Channel</h2>
           <form >
-            <input type="text" placeholder="role name">
-            <input type="checkbox" placeholder="can read">
-            <input type="checkbox" placeholder="can write">
+            <input type="text" id="name" placeholder="name">
+            <input type="text" id="color" placeholder="color (ex: '#ff0000')">
+            <div>
+              <input type="checkbox" id="can-read" name="can read">
+              <label for="can-read">Can Read</label>
+            </div>
+            <div>
+              <input type="checkbox" id="can-write" name="can write">
+              <label for="can-write">Can Write</label>
+            </div>
             <button type="submit">create</button>
           </form>
         </div>
       </div>
       <div id="channel-create-form" class="popupForm">
         <div id="form-wrapper">
+          <h3>Create Channel for this Guild</h2>
           <form >
             <input type="text" placeholder="channel name">
             <button type="submit">create</button>
@@ -106,7 +116,6 @@
         </form>
       </div>
       <div id="channel-members">
-        - Channel Members -
       </div>
     </div>
   </body>

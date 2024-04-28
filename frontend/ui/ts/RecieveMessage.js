@@ -4,8 +4,10 @@
 
 // A button should permit to the user to subscribe to a particular channel
 async function get_in_channel(e) {
-  // The channel id should correspond to the target channel
-  invoke("subscribe", { channelId: channelId }).catch(result=>console.log(result));
+  // The channel id should correspond to the target chann
+  let channelObj = document.querySelector(".channel-selected");
+  let channelid = parseInt(channelObj.getAttribute("channelid"));
+  invoke("subscribe", { channelId: channelid}).catch(result=>console.log(result));
   listen("new_message", async (message) => {
     await display_message(message);
   });

@@ -94,6 +94,7 @@ async function loadServerButtons() {
             button.addEventListener("click", ()=> loadServerChannels(serverid), false);
         }
     }).catch((response)=>{
+        console.log(response)
         console.log("failed to get server ids");
     });
 }

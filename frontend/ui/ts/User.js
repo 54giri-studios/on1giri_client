@@ -125,7 +125,11 @@ class Member {
         let username = document.createElement("p");
         username.className = "memberName";
         username.textContent = member.user.username
-        username.style.color = "red" // should get color of first role
+        if (this.roles.length>0) {
+            username.style.color = this.roles[0].color;
+        } else {
+            username.style.color = "white";
+        }
         rwrapper.appendChild(username)
         if (member.user.description.length>0) {
             let description = document.createElement("small");
@@ -163,6 +167,11 @@ class Member {
         bannerTop.className = "bannerTop";
         let name = document.createElement("h2");
         name.innerText = member.user.username;
+        if (this.roles.length>0) {
+            name.style.color = this.roles[0].color;
+        } else {
+            name.style.color = "white";
+        }
         let status = document.createElement("p");
         status.innerText = member.user.description;
         bannerTop.appendChild(name);

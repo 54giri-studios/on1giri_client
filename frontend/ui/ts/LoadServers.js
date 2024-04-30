@@ -110,6 +110,7 @@ async function loadServerChannels(serverid) {
         } else {
             otherserver[0].classList.remove("server-selected");
         }
+        await leaveChannel();
         clearChannels();
         clearChannelUsers();
         clearMessages();
@@ -144,13 +145,13 @@ async function loadChannelMessages(e, channelid) {
         if (otherChannels.length==0) {
             // nothing to do
         } else {
+            await leaveChannel();
             otherChannels[0].classList.remove("channel-selected");
             clearChannelUsers();
             clearMessages();
         }
         channelObj.classList.add("channel-selected");
     }
-
     get_in_channel(e).then(async (response)=>{
         loadChannelUsers(channelid).then(async ()=>{
             invoke("get_latest_messages", {channelId: channelid, amount: 30, token: getCookieValue("TOKEN")}).then((result)=>{

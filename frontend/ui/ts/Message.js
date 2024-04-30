@@ -8,7 +8,9 @@ class Message {
     }
 
     display() {
+        let associatedMemberButton = document.getElementById("channel-members").querySelector("#member0");
         if (associatedMemberButton==undefined) {
+            console.log("failure")
             return;
         }
         

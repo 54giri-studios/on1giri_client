@@ -13,6 +13,16 @@ async function get_in_channel(e) {
   });
 }
 
+async function leaveChannel() {
+  let channelObj = document.querySelector(".channel-selected");
+  if (channelObj==null) {
+    return;
+  }
+  let channelid = parseInt(channelObj.getAttribute("channelid"));
+  console.log(channelid)
+  invoke("unsubscribe", {channelId:channelid}).catch(result=>console.log(result))
+}
+
 // The endpoint trigger a new tauri event called new_message
 // on all windows
 // This is the callback function that should be triggered

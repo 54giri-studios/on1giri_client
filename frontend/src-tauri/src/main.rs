@@ -28,6 +28,7 @@ fn main() {
         .plugin(tauri_plugin_store::Builder::default().build())
         .invoke_handler(tauri::generate_handler![
             channel::subscribe,
+            channel::unsubscribe,
             channel::send_message,
             channel::get_channel_users,
             channel::create_channel,

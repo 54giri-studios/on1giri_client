@@ -1,6 +1,7 @@
 async function createServer(e, name, description, authorid) {
     e.preventDefault();
     invoke("create_guild", {name: name, ownerId:authorid, description:description, token:getCookieValue("TOKEN")}).then(async (result)=> {
+        loadServerButtons();
         console.log(result); 
     }).catch((result)=>{
         console.log("failed to create guild", result);

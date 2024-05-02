@@ -36,7 +36,8 @@ async function display_message(received) {
     let author = new User(result.content.id, result.content.username, result.content.discriminator, result.content.last_check_in, result.content.picture, result.content.creation_date, result.description);
     let content = msg.content;
     let date = new Date(msg.creation_date);
-    new Message(content, date, author, 0, 42).display();
+    let msg = new Message(content, date, author, 0, 42);
+    msg.display(msg);
     await scrollDown();
   }).catch(async (result)=>{
     console.log("could not get user info");

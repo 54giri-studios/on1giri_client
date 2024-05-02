@@ -7,8 +7,12 @@ class Message {
         this.id = id;
     }
 
-    display() {
-        let associatedMemberButton = document.getElementById("channel-members").querySelector("#member0");
+    display(message) {
+        if (document.getElementById("channel-members").children.length==0) {
+            // wait for member list to be filled
+            window.setTimeout(()=>this.display(message), 100);
+        }
+        let associatedMemberButton = document.getElementById("channel-members").querySelector("#member"+message.author.id);
         if (associatedMemberButton==undefined) {
             console.log("failure")
             return;
@@ -16,9 +20,9 @@ class Message {
         
         let messageBox = document.createElement("div");
         messageBox.className = "message";
-        messageBox.id = "message" + this.id;
-        messageBox.setAttribute("date", this.date);
-        messageBox.setAttribute("authorId", this.author.id);
+        messageBox.id = "message" + message.id;
+        messageBox.setAttribute("date", message.date);
+        messageBox.setAttribute("authorId", message.author.id);
         
         let rightWrapper = document.createElement("div"); // this section contains metadata (usrname, date) and content
         rightWrapper.className = "messageRWrapper";
@@ -31,17 +35,17 @@ class Message {
         let username = document.createElement("div");
         username.className = "username";
         username.style.color = associatedMemberButton.querySelector(".memberName").style.color;
-        username.innerText = this.author.username;
+        username.innerText = message.author.username;
         username.addEventListener("click", ()=> associatedMemberButton.click(), false);
         let dateWrapper = document.createElement("div");
         dateWrapper.className = "dateWrapper";
         let date = document.createElement("small");
         date.className = "date";
-        if (this.date.getDay()==new Date(Date.now()).getDay()){
+        if (message.date.getDay()==new Date(Date.now()).getDay()){
             
-            date.innerText = this.date.toLocaleTimeString();
+            date.innerText = message.date.toLocaleTimeString();
         } else {
-            date.innerText = this.date.toLocaleDateString();
+            date.innerText = message.date.toLocaleDateString();
         }
         dateWrapper.appendChild(date);
         
@@ -51,7 +55,7 @@ class Message {
 
         let content = document.createElement("p");
         content.className = "messageContent"
-        content.textContent = this.content;
+        content.textContent = message.content;
 
         rightWrapper.appendChild(infoBox);
         rightWrapper.appendChild(content);
@@ -59,11 +63,11 @@ class Message {
         
         let pp = document.createElement("button");
         pp.className = "profilePicture";
-        if (this.author.picture.length>0){
-            pp.style.backgroundImage = `url(${this.picture})`;
+        if (message.author.picture.length>0){
+            pp.style.backgroundImage = `url(${message.picture})`;
         } else {
             let p = document.createElement("h2");
-            p.textContent = parseInitials(this.author.username);
+            p.textContent = parseInitials(message.author.username);
             pp.appendChild(p);
         }
         pp.addEventListener("click", ()=> associatedMemberButton.click(), false);
@@ -71,7 +75,7 @@ class Message {
         
         let simpleTime = document.createElement("small");
         simpleTime.className = "simpleDate";
-        simpleTime.textContent = `${String(this.date.getHours()).padStart(2, 0)}:${String(this.date.getMinutes()).padStart(2, 0)}`;
+        simpleTime.textContent = `${String(message.date.getHours()).padStart(2, 0)}:${String(message.date.getMinutes()).padStart(2, 0)}`;
         simpleTime.style.display = "none";
         
         leftWrapper.appendChild(pp);
@@ -81,7 +85,7 @@ class Message {
         messageBox.appendChild(rightWrapper);
         
         
-        this.insertIntoConv(messageBox);
+        message.insertIntoConv(messageBox);
     }
 
     async getAuthorInfo(id) {

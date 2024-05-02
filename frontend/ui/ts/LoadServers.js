@@ -169,7 +169,9 @@ async function loadChannelMessages(e, channelid) {
                     if (document.getElementById("message"+id)!=undefined) {
                         continue;
                     }
-                    new Message(content, date, author, id).display();
+                    let msg = new Message(content, date, author, id);
+                    console.log("trying");
+                    msg.display(msg);
                     scrollDown();
                 }
             }).catch((result)=>{

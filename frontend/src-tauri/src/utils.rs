@@ -11,8 +11,19 @@ async fn handle_response(
 
         match &response {
             r if r.status().is_success() => {
+                let res: serde_json::Value = serde_json::from_str(response.text().await.unwrap().as_str()).unwrap();
+
+                let string_res = res.to_string();
+                if string_res.contains("status") {
+                    return Err(result::OperationResult::new(
+                    None,
+                    result::ResultCode::ERROR,
+                        Some(string_res),
+                    ));
+                }
+
                 return Ok(result::OperationResult::new(
-                    Some(serde_json::from_str(response.text().await.unwrap().as_str()).unwrap()),
+                    Some(res),
                     result::ResultCode::SUCCESS,
                     None,
                 ));
@@ -40,6 +51,7 @@ async fn handle_response(
             }
         }
     } else {
+        log::warn!("{:?}", call);
         return Err(result::OperationResult::new(None, result::ResultCode::ERROR, Some(String::from("Cannot contact the server, redirect loop was detected or redirect limit was exhausted."))));
     }
 }
@@ -58,8 +70,9 @@ pub fn convert_to_json_str(map: HashMap<&str, String>) -> Result<String, result:
 }
 
 pub fn convert_to_urlencoded_str(
-    map: HashMap<&str, String>,
+    map: &[(&str, String)],
 ) -> Result<String, result::OperationResult> {
+    
     match serde_urlencoded::to_string(&map) {
         Ok(body) => Ok(body),
         Err(_) => Err(result::OperationResult::new(
@@ -129,12 +142,12 @@ pub async fn post_server(
 
 pub async fn post_form_server(
     url: reqwest::Url,
-    form: Option<Vec<(String, String)>>,
+    form: Option<HashMap<&str, String>>,
     token: Option<String>,
 ) -> Result<result::OperationResult, result::OperationResult> {
     let client = reqwest::Client::new();
 
-    let mut call = client.post(url).header("Content-type", "application/json");
+    let mut call = client.post(url).header("Content-Type", "application/x-www-form-urlencoded");
 
     if let Some(f) = form {
         call = call.form(&f);

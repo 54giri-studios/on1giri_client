@@ -26,26 +26,26 @@ impl User {
 
 #[tauri::command]
 pub async fn login(
-    username: Option<String>,
+    email: Option<String>,
     password: Option<String>,
     token: Option<String>,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = format!("/login");
+    let endpoint = format!("/auth/login");
 
-    if username.is_none() && password.is_none() {
+    if email.is_none() && password.is_none() {
         return match utils::build_url(endpoint) {
             Ok(url) => utils::post_form_server(url, None, token).await,
             Err(e) => Err(e),
         };
     }
 
-    let input = [
-        (String::from("username"), username.unwrap()),
-        (String::from("password"), password.unwrap()),
-    ];
+    let mut input = HashMap::new();
+    input.insert("email", email.unwrap());
+    input.insert("password", password.unwrap());
 
+    
     match utils::build_url(endpoint) {
-        Ok(url) => utils::post_form_server(url, Some(input.into()), None).await,
+        Ok(url) => utils::post_form_server(url, Some(input), None).await,
         Err(e) => Err(e),
     }
 }

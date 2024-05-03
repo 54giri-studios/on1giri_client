@@ -72,7 +72,9 @@ async fn listen_and_emit_messages(
     app: AppHandle,
     token: CancellationToken,
 ) -> Result<(), result::OperationResult> {
-    let url = reqwest::Url::parse(format!("{}/channels/{}/subscribe", server, channel_id).as_str())
+    let url = utils::get_endpoint("subscribe_to_a_channel", &[&channel_id.to_string()])?;
+    
+    let url = reqwest::Url::parse(format!("{}{}", server, url).as_str())
         .unwrap();
 
     let client = Client::new(url);
@@ -101,20 +103,6 @@ async fn listen_and_emit_messages(
     Ok(())
 }
 
-fn get_and_parse_url() -> Result<tauri::Url, result::OperationResult> {
-    let server = std::env::var("SERVER_URL")
-        .ok()
-        .unwrap_or(String::from("http://127.0.0.1:8000"));
-
-    match reqwest::Url::parse(&server) {
-        Ok(e) => Ok(e),
-        Err(_) => Err(result::OperationResult::new(
-            None,
-            result::ResultCode::ERROR,
-            Some("Cannot parse server's url".into()),
-        )),
-    }
-}
 
 #[tauri::command]
 pub async fn subscribe(
@@ -122,7 +110,7 @@ pub async fn subscribe(
     app: AppHandle,
     state: State<'_, ChannelState>,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    let url = get_and_parse_url()?;
+    let url = utils::get_and_parse_server_url()?;
 
     info!("\n\n------------------------------------- SUBSCRIBE TO THE CHANNEL {} ------------------------ \n\n", channel_id);
 
@@ -210,12 +198,13 @@ pub async fn send_message(
     let message = message::Message::new(channel_id, author_id, content);
     let message = serde_json::to_string(&message).unwrap();
 
+    let server_url = utils::get_and_parse_server_url()?;
+
     let url = reqwest::Url::parse(
         format!(
-            "{}/messages/",
-            std::env::var("SERVER_URL")
-                .ok()
-                .unwrap_or(String::from("http://127.0.0.1:8000")),
+            "{}{}",
+            server_url,
+            utils::get_endpoint("send_message", &[])?
         )
         .as_str(),
     )
@@ -269,7 +258,7 @@ pub async fn get_channel_users(
     channel_id: i32,
     token: String,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = format!("/channels/{}/members", channel_id);
+    let endpoint = utils::get_endpoint("get_members_of_a_channel", &[&channel_id.to_string()])?;
 
     match utils::build_url(endpoint.as_str()) {
         Ok(url) => utils::fetch_data(url, token).await,
@@ -284,7 +273,7 @@ pub async fn create_channel(
     kind: String,
     token: String,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = "/channels/create";
+    let endpoint = utils::get_endpoint("create_channel", &[])?;
     let new_channel = NewChannel::new(guild_id, name, kind);
     let new_channel = serde_json::to_string(&new_channel).unwrap();
     let endpoint = utils::build_url(endpoint)?;

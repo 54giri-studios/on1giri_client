@@ -35,7 +35,7 @@ fn main() {
             guild::get_guild_channels,
             guild::add_user_to_guild,
             guild::create_guild,
-            message::get_messages,
+            message::get_message,
             message::get_latest_messages,
             user::login,
             user::create_user,

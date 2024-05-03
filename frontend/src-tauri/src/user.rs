@@ -9,12 +9,7 @@ struct User {
 }
 
 impl User {
-    pub fn new(
-        username: String,
-        discrimator: i16,
-        picture: String,
-        description: String,
-    ) -> Self {
+    pub fn new(username: String, discrimator: i16, picture: String, description: String) -> Self {
         Self {
             username,
             discrimator,
@@ -30,7 +25,7 @@ pub async fn login(
     password: Option<String>,
     token: Option<String>,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = format!("/auth/login");
+    let endpoint = utils::get_endpoint("login", &[])?;
 
     if email.is_none() && password.is_none() {
         return match utils::build_url(endpoint) {
@@ -39,11 +34,18 @@ pub async fn login(
         };
     }
 
+    if email.is_none() || password.is_none() {
+        return Err(result::OperationResult::new(
+            None,
+            result::ResultCode::ERROR,
+            Some("Email or password is empty".into()),
+        ));
+    }
+
     let mut input = HashMap::new();
     input.insert("email", email.unwrap());
     input.insert("password", password.unwrap());
 
-    
     match utils::build_url(endpoint) {
         Ok(url) => utils::post_form_server(url, Some(input), None).await,
         Err(e) => Err(e),
@@ -57,7 +59,7 @@ pub async fn create_user(
     description: String,
     picture: String,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = "/user/create";
+    let endpoint = utils::get_endpoint("register", &[])?;
 
     let new_user = User::new(username, discriminator, description, picture);
 
@@ -78,7 +80,7 @@ pub async fn get_user_info(
     user_id: i32,
     token: String,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = format!("/users/{}", user_id);
+    let endpoint = utils::get_endpoint("user_get_by_id", &[&user_id.to_string()])?;
 
     match utils::build_url(endpoint) {
         Ok(url) => utils::fetch_data(url, token).await,
@@ -91,7 +93,7 @@ pub async fn get_user_guilds(
     user_id: i32,
     token: String,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = format!("/users/{}/guilds", user_id);
+    let endpoint = utils::get_endpoint("get_user_guilds", &[&user_id.to_string()])?;
     match utils::build_url(endpoint) {
         Ok(url) => utils::fetch_data(url, token).await,
         Err(e) => Err(e),

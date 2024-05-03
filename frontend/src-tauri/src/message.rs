@@ -37,16 +37,12 @@ impl HistoryConfig {
 
 
 #[tauri::command]
-pub async fn get_messages(
+pub async fn get_message(
     channel_id: i32,
     message_id: i32,
-    amount: i32,
     token: String,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = format!(
-        "/message/get_amount_prec_messages/{}/{}/{}",
-        channel_id, message_id, amount
-    );
+    let endpoint = utils::get_endpoint("get_a_message_info", &[&channel_id.to_string(), &message_id.to_string()])?;
     let url = utils::build_url(endpoint)?;
     utils::fetch_data(url, token).await
 }
@@ -59,7 +55,7 @@ pub async fn get_latest_messages(
     after: Option<DateTime<Utc>>,
     token: String,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = format!("/channels/{}/messages/history", channel_id);
+    let endpoint = utils::get_endpoint("get_history_of_messages_of_channel", &[&channel_id.to_string()])?;
 
     let config;
 

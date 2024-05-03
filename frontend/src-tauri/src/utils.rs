@@ -1,6 +1,77 @@
 use super::*;
 use std::collections::HashMap;
 
+
+pub fn get_and_parse_server_url() -> Result<tauri::Url, result::OperationResult> {
+    let server = std::env::var("SERVER_URL")
+        .ok()
+        .unwrap_or(String::from("http://127.0.0.1:8000"));
+
+    match reqwest::Url::parse(&server) {
+        Ok(e) => Ok(e),
+        Err(_) => Err(result::OperationResult::new(
+            None,
+            result::ResultCode::ERROR,
+            Some("Cannot parse server's url".into()),
+        )),
+    }
+}
+
+pub fn get_endpoint(command: &str, args: &[&str]) -> Result<String, result::OperationResult> {
+    let endpoints: HashMap<&str, String> = {
+        let mut map = HashMap::new();
+
+        map.insert("login", String::from("/auth/login"));
+        map.insert("logout", String::from("/auth/logout"));
+        map.insert("register", String::from("/auth/register"));
+        map.insert("user_delete", String::from("/users/{}"));
+        map.insert("user_get_by_id", String::from("/users/{}"));
+        map.insert("user_create", String::from("/users/create"));
+        map.insert("user_update", String::from("/users/{}"));
+        map.insert("add_user_to_guild", String::from("/guilds/{}/members/{}/join"));
+        map.insert("get_user_guilds", String::from("/users/{}/guilds"));
+        map.insert("create_guild", String::from("/guilds/create"));
+        map.insert("get_a_guild_info", String::from("/guilds/{}"));
+        map.insert("update_a_guild", String::from("/guilds/{}"));
+        map.insert("get_a_guild_roles", String::from("/guilds/{}/roles"));
+        map.insert("get_a_guild_members", String::from("/guilds/{}/roles"));
+        map.insert("get_a_guild_channels", String::from("/guilds/{}/channels"));
+        map.insert("get_a_guild_member_info", String::from("/guilds/{}/members/{}"));
+        map.insert("get_channel_permission_from_guild", String::from("/guilds/{}/channels/{}/permissions"));
+
+        map.insert("get_a_role_of_channel_permission_from_guild", String::from("/guilds/{}/channels/{}/roles/{}/permissions"));
+
+        map.insert("update_channel_role_permission_from_guild", String::from("/guilds/{}/channels/{}/roles/{}/permissions"));
+
+        map.insert("send_message", String::from("/messages"));
+        map.insert("create_channel", String::from("/channels/create"));
+        map.insert("get_a_channel_info", String::from("/channels/{}"));
+        map.insert("get_members_of_a_channel", String::from("/channels/{}/members"));
+        map.insert("subscribe_to_a_channel", String::from("/channels/{}/subscribe"));
+        map.insert("get_history_of_messages_of_channel", String::from("/channels/{}/messages/history"));
+        map.insert("get_a_message_info", String::from("/channels/{}/messages/{}"));
+        map
+    };
+
+    let Some(endpoint) = endpoints.get(command) else {
+        return Err(result::OperationResult::new(
+                    None,
+                    result::ResultCode::ERROR,
+            Some("Url not found in the registered map of url, verify the key".into()),
+        ));
+    };
+
+    let mut endpoint: String = endpoint.clone();
+
+    for param in args {
+        endpoint = endpoint.replacen("{}", &param, 1);
+    }
+
+    Ok(endpoint)
+    
+}
+
+
 async fn handle_response(
     call: Result<reqwest::Response, reqwest::Error>,
 ) -> Result<result::OperationResult, result::OperationResult> {
@@ -64,22 +135,6 @@ pub fn convert_to_json_str(map: HashMap<&str, String>) -> Result<String, result:
             result::ResultCode::ERROR,
             Some(String::from(
                 "Error in data, could not be parse into json string",
-            )),
-        )),
-    }
-}
-
-pub fn convert_to_urlencoded_str(
-    map: &[(&str, String)],
-) -> Result<String, result::OperationResult> {
-    
-    match serde_urlencoded::to_string(&map) {
-        Ok(body) => Ok(body),
-        Err(_) => Err(result::OperationResult::new(
-            None,
-            result::ResultCode::ERROR,
-            Some(String::from(
-                "Error in data, could not be parse into urlencoded type",
             )),
         )),
     }
@@ -184,7 +239,7 @@ mod test {
             Err(e) => assert_eq!(e.code, result::ResultCode::ERROR),
         }
     }
-
+    
     #[test]
     fn correct_json_should_be_converted() {
         let mut to_send = HashMap::new();

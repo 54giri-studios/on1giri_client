@@ -24,7 +24,7 @@ async function joinServerSubmit(e) {
     if (isNaN(id)){
         serverForm.firstElementChild.firstElementChild.style.outline = "solid";
     } else {
-        invoke("add_user_to_guild", {guildId: id, userId:0, token: getCookieValue("TOKEN")}).then((response) => {
+        invoke("add_user_to_guild", {guildId: id, userId:userId, token: getCookieValue("TOKEN")}).then((response) => {
             loadServerButtons();
         }).catch((response)=>{
             console.log(response);

@@ -83,6 +83,7 @@ class ChannelButton {
 
 async function loadServerButtons() {
     invoke("get_user_guilds", {userId: userId, token:getCookieValue("TOKEN")}).then((result)=>{
+        console.log(userId)
         for (const server of result.content) {
             if (document.getElementById("server"+server.id)!= undefined) {
                 continue;
@@ -170,7 +171,6 @@ async function loadChannelMessages(e, channelid) {
                         continue;
                     }
                     let msg = new Message(content, date, author, id);
-                    console.log("trying");
                     msg.display(msg);
                     scrollDown();
                 }

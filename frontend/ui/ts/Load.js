@@ -121,6 +121,9 @@ function onReady() {
       serverObj.classList.remove("server-selected");
       setTimeout(async ()=>await loadServerChannels(parseInt(serverObj.getAttribute("serverid"))), 500);
   })
+
+
+  // server creation section
   serverCreateForm = document.getElementById("server-create-form")
   document.getElementById("createServer").addEventListener("click", async ()=>{
     serverCreateForm.style.display = "flex";
@@ -140,7 +143,7 @@ function onReady() {
     }
     serverCreateForm.querySelector("#name").value="";
     serverCreateForm.querySelector("#description").value="";
-    await createServer(e, name, description, 0);
+    await createServer(e, name, description, userId);
     serverCreateForm.firstElementChild.value = "";
     serverCreateForm.style.display = "none";
   })
@@ -166,17 +169,14 @@ async function login(e) {
     form.firstElementChild.firstElementChild.nextElementSibling.style.outline = "solid";
     return;
   }
-  invoke("login", {username:usernameInput, password:passwordInput}).then((result)=>{
-    console.log(result)
+  invoke("login", {email:usernameInput, password:passwordInput}).then((result)=>{
+    console.log(document.cookie)
     document.cookie = "TOKEN="+result.content.token;
-    userid = result.userId;
+    userId = result.content.id;
     form.style.display = "none";
     afterLogin();
   }).catch((response)=>{
-    document.cookie = "TOKEN="+"huzef"; 
-    form.style.display = "none";
-    afterLogin();
-    console.log("Failed to login");
+    console.log(response,"Failed to login");
   })
 }
 
@@ -200,14 +200,14 @@ async function createAccount(e) {
     form.firstElementChild.firstElementChild.nextElementSibling.style.outline = "solid";
     return;
   }
-  invoke("create_user", {username:usernameInput, email:passwordInput, description:"haha", picture:"velipaka"}).then((result)=>{
+  invoke("register", {email:usernameInput, password:passwordInput}).then((result)=>{
   if (document.getElementById("error")!=undefined){
     document.getElementById("error").remove();
   }
   loginForm.style.display = "flex";
   createAccountForm.style.display = "none";
-  }).catch(()=>{
-    console.log("failed to create account");
+  }).catch((result)=>{
+    console.log(result,"failed to create account");
     let errorMsg = document.createElement("small");
     errorMsg.id = "error";
     errorMsg.style.color = "red";

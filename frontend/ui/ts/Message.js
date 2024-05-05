@@ -11,10 +11,10 @@ class Message {
         if (document.getElementById("channel-members").children.length==0) {
             // wait for member list to be filled
             window.setTimeout(()=>this.display(message), 100);
+            return;
         }
         let associatedMemberButton = document.getElementById("channel-members").querySelector("#member"+message.author.id);
         if (associatedMemberButton==undefined) {
-            console.log("failure")
             return;
         }
         

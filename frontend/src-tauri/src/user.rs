@@ -2,20 +2,37 @@ use super::*;
 
 #[derive(serde::Serialize, serde::Deserialize)]
 struct User {
-    username: String,
-    discrimator: i16,
-    picture: String,
-    description: String,
+    username: Option<String>,
+    discrimator: Option<i16>,
+    picture: Option<String>,
+    description: Option<String>,
 }
 
 impl User {
-    pub fn new(username: String, discrimator: i16, picture: String, description: String) -> Self {
+    pub fn new(
+        username: Option<String>,
+        discrimator: Option<i16>,
+        picture: Option<String>,
+        description: Option<String>,
+    ) -> Self {
         Self {
             username,
             discrimator,
             picture,
             description,
         }
+    }
+}
+
+#[derive(serde::Serialize, serde::Deserialize)]
+struct RegisterForm {
+    email: String,
+    password: String,
+}
+
+impl RegisterForm {
+    pub fn new(email: String, password: String) -> Self {
+        Self { email, password }
     }
 }
 
@@ -53,6 +70,33 @@ pub async fn login(
 }
 
 #[tauri::command]
+pub async fn register(
+    email: String,
+    password: String,
+) -> Result<result::OperationResult, result::OperationResult> {
+    let endpoint = utils::get_endpoint("register", &[])?;
+
+    let reg = RegisterForm::new(email, password);
+    let Ok(reg) = serde_json::to_string(&reg) else {
+        return Err(result::OperationResult::new(
+            None,
+            result::ResultCode::ERROR,
+            Some("Email or password is empty".into()),
+        ));
+    };
+
+    let url = utils::build_url(endpoint)?;
+    utils::post_server(url, Some(reg), None).await
+}
+
+#[tauri::command]
+pub async fn logout(token: String) -> Result<result::OperationResult, result::OperationResult> {
+    let endpoint = utils::get_endpoint("logout", &[])?;
+    let url = utils::build_url(endpoint)?;
+    utils::fetch_data(url, token).await
+}
+
+#[tauri::command]
 pub async fn create_user(
     username: String,
     discriminator: i16,
@@ -61,7 +105,12 @@ pub async fn create_user(
 ) -> Result<result::OperationResult, result::OperationResult> {
     let endpoint = utils::get_endpoint("register", &[])?;
 
-    let new_user = User::new(username, discriminator, description, picture);
+    let new_user = User::new(
+        Some(username),
+        Some(discriminator),
+        Some(description),
+        Some(picture),
+    );
 
     let body = serde_json::to_string(&new_user);
 
@@ -76,6 +125,16 @@ pub async fn create_user(
 }
 
 #[tauri::command]
+pub async fn delete_user_account(
+    user_id: i32,
+    token: String,
+) -> Result<result::OperationResult, result::OperationResult> {
+    let endpoint = utils::get_endpoint("user_delete", &[&user_id.to_string()])?;
+    let url = utils::build_url(endpoint)?;
+    utils::fetch_data(url, token).await
+}
+
+#[tauri::command]
 pub async fn get_user_info(
     user_id: i32,
     token: String,
@@ -86,6 +145,24 @@ pub async fn get_user_info(
         Ok(url) => utils::fetch_data(url, token).await,
         Err(e) => Err(e),
     }
+}
+
+#[tauri::command]
+pub async fn update_user_info(
+    token: String,
+    username: Option<String>,
+    discriminator: Option<i16>,
+    picture: Option<String>,
+    description: Option<String>,
+) -> Result<result::OperationResult, result::OperationResult> {
+    let endpoint = utils::get_endpoint("user_update", &[])?;
+    let fake_usr = User::new(username, discriminator, picture, description);
+
+    let Ok(body) = serde_json::to_string(&fake_usr) else {
+        return Err(result::OperationResult::new(None, result::ResultCode::ERROR, Some("Cannot convert the user metadata to json, where not able to send it to the backend".into())));
+    };
+    let url = utils::build_url(endpoint)?;
+    utils::patch_data(url, token, body).await
 }
 
 #[tauri::command]

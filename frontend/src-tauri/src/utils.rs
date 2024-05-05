@@ -1,7 +1,6 @@
 use super::*;
 use std::collections::HashMap;
 
-
 pub fn get_and_parse_server_url() -> Result<tauri::Url, result::OperationResult> {
     let server = std::env::var("SERVER_URL")
         .ok()
@@ -28,7 +27,10 @@ pub fn get_endpoint(command: &str, args: &[&str]) -> Result<String, result::Oper
         map.insert("user_get_by_id", String::from("/users/{}"));
         map.insert("user_create", String::from("/users/create"));
         map.insert("user_update", String::from("/users/{}"));
-        map.insert("add_user_to_guild", String::from("/guilds/{}/members/{}/join"));
+        map.insert(
+            "add_user_to_guild",
+            String::from("/guilds/{}/members/{}/create"),
+        );
         map.insert("get_user_guilds", String::from("/users/{}/guilds"));
         map.insert("create_guild", String::from("/guilds/create"));
         map.insert("get_a_guild_info", String::from("/guilds/{}"));
@@ -36,27 +38,51 @@ pub fn get_endpoint(command: &str, args: &[&str]) -> Result<String, result::Oper
         map.insert("get_a_guild_roles", String::from("/guilds/{}/roles"));
         map.insert("get_a_guild_members", String::from("/guilds/{}/roles"));
         map.insert("get_a_guild_channels", String::from("/guilds/{}/channels"));
-        map.insert("get_a_guild_member_info", String::from("/guilds/{}/members/{}"));
-        map.insert("get_channel_permission_from_guild", String::from("/guilds/{}/channels/{}/permissions"));
+        map.insert(
+            "get_a_guild_member_info",
+            String::from("/guilds/{}/members/{}"),
+        );
+        map.insert(
+            "get_guild_channel_permissions",
+            String::from("/guilds/{}/channels/{}/permissions"),
+        );
 
-        map.insert("get_a_role_of_channel_permission_from_guild", String::from("/guilds/{}/channels/{}/roles/{}/permissions"));
+        map.insert(
+            "get_guild_channel_role_permissions",
+            String::from("/guilds/{}/channels/{}/roles/{}/permissions"),
+        );
 
-        map.insert("update_channel_role_permission_from_guild", String::from("/guilds/{}/channels/{}/roles/{}/permissions"));
+        map.insert(
+            "patch_guild_channel_role_permissions",
+            String::from("/guilds/{}/channels/{}/roles/{}/permissions"),
+        );
 
         map.insert("send_message", String::from("/messages"));
         map.insert("create_channel", String::from("/channels/create"));
         map.insert("get_a_channel_info", String::from("/channels/{}"));
-        map.insert("get_members_of_a_channel", String::from("/channels/{}/members"));
-        map.insert("subscribe_to_a_channel", String::from("/channels/{}/subscribe"));
-        map.insert("get_history_of_messages_of_channel", String::from("/channels/{}/messages/history"));
-        map.insert("get_a_message_info", String::from("/channels/{}/messages/{}"));
+        map.insert(
+            "get_members_of_a_channel",
+            String::from("/channels/{}/members"),
+        );
+        map.insert(
+            "subscribe_to_a_channel",
+            String::from("/channels/{}/subscribe"),
+        );
+        map.insert(
+            "get_history_of_messages_of_channel",
+            String::from("/channels/{}/messages/history"),
+        );
+        map.insert(
+            "get_a_message_info",
+            String::from("/channels/{}/messages/{}"),
+        );
         map
     };
 
     let Some(endpoint) = endpoints.get(command) else {
         return Err(result::OperationResult::new(
-                    None,
-                    result::ResultCode::ERROR,
+            None,
+            result::ResultCode::ERROR,
             Some("Url not found in the registered map of url, verify the key".into()),
         ));
     };
@@ -68,9 +94,7 @@ pub fn get_endpoint(command: &str, args: &[&str]) -> Result<String, result::Oper
     }
 
     Ok(endpoint)
-    
 }
-
 
 async fn handle_response(
     call: Result<reqwest::Response, reqwest::Error>,
@@ -82,13 +106,14 @@ async fn handle_response(
 
         match &response {
             r if r.status().is_success() => {
-                let res: serde_json::Value = serde_json::from_str(response.text().await.unwrap().as_str()).unwrap();
+                let res: serde_json::Value =
+                    serde_json::from_str(response.text().await.unwrap().as_str()).unwrap();
 
                 let string_res = res.to_string();
                 if string_res.contains("status") {
                     return Err(result::OperationResult::new(
-                    None,
-                    result::ResultCode::ERROR,
+                        None,
+                        result::ResultCode::ERROR,
                         Some(string_res),
                     ));
                 }
@@ -173,6 +198,23 @@ pub async fn fetch_data(
     handle_response(call).await
 }
 
+pub async fn patch_data(
+    url: reqwest::Url,
+    token: impl Into<String>,
+    body: String,
+) -> Result<result::OperationResult, result::OperationResult> {
+    let client = reqwest::Client::new();
+
+    let mut call = client
+        .patch(url)
+        .body(body)
+        .header("Content-type", "application/json");
+
+    call = call.header("AUTHORIZATION", format!("Bearer {}", token.into()));
+
+    handle_response(call.send().await).await
+}
+
 pub async fn post_server(
     url: reqwest::Url,
     body: Option<String>,
@@ -193,8 +235,6 @@ pub async fn post_server(
     handle_response(call.send().await).await
 }
 
-
-
 pub async fn post_form_server(
     url: reqwest::Url,
     form: Option<HashMap<&str, String>>,
@@ -202,7 +242,9 @@ pub async fn post_form_server(
 ) -> Result<result::OperationResult, result::OperationResult> {
     let client = reqwest::Client::new();
 
-    let mut call = client.post(url).header("Content-Type", "application/x-www-form-urlencoded");
+    let mut call = client
+        .post(url)
+        .header("Content-Type", "application/x-www-form-urlencoded");
 
     if let Some(f) = form {
         call = call.form(&f);
@@ -239,7 +281,7 @@ mod test {
             Err(e) => assert_eq!(e.code, result::ResultCode::ERROR),
         }
     }
-    
+
     #[test]
     fn correct_json_should_be_converted() {
         let mut to_send = HashMap::new();

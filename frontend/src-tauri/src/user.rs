@@ -24,17 +24,7 @@ impl User {
     }
 }
 
-#[derive(serde::Serialize, serde::Deserialize)]
-struct RegisterForm {
-    email: String,
-    password: String,
-}
 
-impl RegisterForm {
-    pub fn new(email: String, password: String) -> Self {
-        Self { email, password }
-    }
-}
 
 #[tauri::command]
 pub async fn login(
@@ -76,17 +66,12 @@ pub async fn register(
 ) -> Result<result::OperationResult, result::OperationResult> {
     let endpoint = utils::get_endpoint("register", &[])?;
 
-    let reg = RegisterForm::new(email, password);
-    let Ok(reg) = serde_json::to_string(&reg) else {
-        return Err(result::OperationResult::new(
-            None,
-            result::ResultCode::ERROR,
-            Some("Email or password is empty".into()),
-        ));
-    };
+    let mut input = HashMap::new();
+    input.insert("email", email);
+    input.insert("password", password);
 
     let url = utils::build_url(endpoint)?;
-    utils::post_server(url, Some(reg), None).await
+    utils::post_form_server(url, Some(input), None).await
 }
 
 #[tauri::command]
@@ -103,7 +88,7 @@ pub async fn create_user(
     description: String,
     picture: String,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    let endpoint = utils::get_endpoint("register", &[])?;
+    let endpoint = utils::get_endpoint("user_create", &[])?;
 
     let new_user = User::new(
         Some(username),

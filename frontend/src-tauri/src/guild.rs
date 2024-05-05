@@ -41,10 +41,8 @@ pub async fn add_user_to_guild(
         &[&guild_id.to_string(), &user_id.to_string()],
     )?;
 
-    match utils::build_url(endpoint) {
-        Ok(url) => utils::fetch_data(url, token).await,
-        Err(e) => Err(e),
-    }
+    let url = utils::build_url(endpoint)?;
+    utils::post_server(url, None, Some(token)).await
 }
 
 #[tauri::command]

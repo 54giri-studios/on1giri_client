@@ -8,7 +8,7 @@ async function get_in_channel(e) {
   let channelObj = document.querySelector(".channel-selected");
   let channelid = parseInt(channelObj.getAttribute("channelid"));
   invoke("subscribe", { channelId: channelid}).catch(result=>console.log("subscribe to",result));
-  listen("new_message", async (message) => {
+  listen(`new_message_${channelid}`, async (message) => {
     await display_message(message);
   });
 }
@@ -30,7 +30,11 @@ async function leaveChannel() {
 
 async function display_message(received) {
 
+  let channelObj = document.querySelector(".channel-selected");
+  let channelid = parseInt(channelObj.getAttribute("channelid"));
+
   let msg = JSON.parse(received.payload);
+  if(msg.channel_id == channelid) {
   invoke("get_user_info", {userId:msg.author_id, token:getCookieValue("TOKEN")}).then(async (result)=>{
     console.log(msg);
     let author = new User(result.content.id, result.content.username, result.content.discriminator, result.content.last_check_in, result.content.picture, result.content.creation_date, result.description);
@@ -42,4 +46,5 @@ async function display_message(received) {
   }).catch(async (result)=>{
     console.log(result,"could not get user info");
   })
+  }
 }

@@ -92,7 +92,7 @@ async fn listen_and_emit_messages(
                 );
                 let mess = serde_json::to_value(message.data.as_str());
                 if let Ok(mess) = mess {
-                    app.emit_all("new_message", mess)
+                    app.emit_all(format!("new_message_{}", channel_id).as_str(), mess)
                         .expect("Cannot send to front");
                 };
             }

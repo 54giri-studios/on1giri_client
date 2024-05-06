@@ -161,7 +161,7 @@ pub async fn unsubscribe(
     channel_id: i32,
     state: State<'_, ChannelState>,
 ) -> Result<result::OperationResult, result::OperationResult> {
-    let tokens = state.state.lock().await;
+    let mut tokens = state.state.lock().await;
     let token = tokens.get(&channel_id);
 
     if token.is_none() {
@@ -178,6 +178,8 @@ pub async fn unsubscribe(
     let token = token.unwrap();
 
     token.cancel();
+
+    tokens.remove(&channel_id);
 
     Ok(result::OperationResult::new(
         Some(serde_json::Value::String(format!(

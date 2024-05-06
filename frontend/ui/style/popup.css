@@ -11,12 +11,11 @@
 }
 
 .popupInnerWrapper {
-    min-height: 400;
-    max-height: fit-content;
-    width: 500;
+    min-height: 300px;
+    max-height: 600px;
+    height: fit-content;
+    width: 300px;
     background-color: var(--conversations-color);
     padding: 10px;
     border-radius: 5px;
-    animation-name: popupAnimation;
-    animation-duration: 1s;
 }

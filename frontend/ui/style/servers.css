@@ -38,6 +38,10 @@
     flex-shrink: 0;
 }
 
+.server-selected {
+    border: 1px rgb(255, 255, 255) solid;
+}
+
 .server>h1{
     color: white;
     text-align: center;

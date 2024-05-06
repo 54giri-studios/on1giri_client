@@ -99,6 +99,9 @@ class Message {
 
 
     insertIntoConv(messageBloc) {
+        if (document.getElementById(messageBloc.id)!= null) {
+            return;
+        }
         let current = chat.lastElementChild;
         while (current != undefined && this.isOlder(messageBloc, current)) {
             current = current.previousSibling;

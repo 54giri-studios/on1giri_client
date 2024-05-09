@@ -19,7 +19,6 @@ pub fn get_and_parse_server_url() -> Result<tauri::Url, result::OperationResult>
 pub fn get_endpoint(command: &str, args: &[&str]) -> Result<String, result::OperationResult> {
     let endpoints: HashMap<&str, String> = {
         let mut map = HashMap::new();
-
         map.insert("login", String::from("/auth/login"));
         map.insert("logout", String::from("/auth/logout"));
         map.insert("register", String::from("/auth/register"));
@@ -264,6 +263,14 @@ mod test {
     use httpmock::prelude::*;
 
     #[test]
+    fn should_get_endpoint_with_parameters_replaced() {
+        let Ok(url) = get_endpoint("get_a_guild_member_info", &["1", "2"]) else {
+            panic!("The url should exists or checkout the name of the endpoint");
+        };
+        assert_eq!(url, "/guilds/1/members/2".to_string());
+    }
+
+    #[test]
     fn correct_url_should_build() {
         let url = build_url("/api/v1/").unwrap();
         assert_eq!(
@@ -290,13 +297,13 @@ mod test {
 
         let converted = convert_to_json_str(to_send).unwrap();
         assert!(
-            converted == String::from("{\"name\":\"John\",\"age\":\"20\"}")
-                || converted == String::from("{\"age\":\"20\",\"name\":\"John\"}")
+            converted == String::from(r#"{"name":"John","age":"20"}"#)
+                || converted == String::from(r#"{"age":"20","name":"John"}"#)
         );
     }
 
     #[tokio::test]
-    async fn good_request_should_return_json_data() {
+    async fn test_fetching_data_request() {
         let server = MockServer::start();
         std::env::set_var("SERVER_URL", server.base_url());
 
@@ -306,7 +313,7 @@ mod test {
                 .header("AUTHORIZATION", "Bearer testjfhwer90923y45fksajf");
             then.status(200)
                 .header("Content-Type", "application/json")
-                .body("{\"name\": \"John\", \"age\": 20}");
+                .body(r#"{"name": "John", "age": 20}"#);
         });
 
         println!("{}", server.url("/api/v1/").as_str());
@@ -319,7 +326,7 @@ mod test {
                 assert_eq!(res.code, result::ResultCode::SUCCESS);
                 assert_eq!(
                     res.content,
-                    Some(serde_json::from_str("{\"name\": \"John\", \"age\": 20}").unwrap())
+                    Some(serde_json::from_str(r#"{"name": "John", "age": 20}"#).unwrap())
                 );
             }
             Err(e) => {
@@ -327,4 +334,7 @@ mod test {
             }
         }
     }
+
+   
 }
+

@@ -24,8 +24,6 @@ impl User {
     }
 }
 
-
-
 #[tauri::command]
 pub async fn login(
     email: Option<String>,
@@ -172,17 +170,21 @@ mod test {
         let server = MockServer::start();
         std::env::set_var("SERVER_URL", server.base_url());
 
+        let Ok(endpoint) = utils::get_endpoint("get_user_guilds", &["1"]) else {
+            panic!("login endpoint doesn't exists");
+        };
+
         let _m = server.mock(|when, then| {
-            when.method(GET).path("/user/1/guilds");
+            when.method(GET).path(endpoint);
             then.status(200)
                 .header("Content-Type", "application/json")
-                .body("{ \"guilds\": [ { \"id\": 1, \"name\": \"Guild 1\" }, { \"id\": 2, \"name\": \"Guild 2\" } ] }");
+                .body(r#"{ "guilds": [ { "id": 1, "name": "Guild 1" }, { "id": 2, "name": "Guild 2" } ] }"#);
         });
 
         match get_user_guilds(1, "flkdjsalfkjsdlfk2857625".into()).await {
             Ok(res) => {
                 assert_eq!(res.code, result::ResultCode::SUCCESS);
-                assert_eq!(res.content, Some(serde_json::from_str("{ \"guilds\": [ { \"id\": 1, \"name\": \"Guild 1\" }, { \"id\": 2, \"name\": \"Guild 2\" } ] }").unwrap()));
+                assert_eq!(res.content, Some(serde_json::from_str(r#"{ "guilds": [ { "id": 1, "name": "Guild 1" }, { "id": 2, "name": "Guild 2" } ] }"#).unwrap()));
             }
             Err(e) => {
                 panic!("{e:?}");
@@ -195,17 +197,30 @@ mod test {
         let server = MockServer::start();
         std::env::set_var("SERVER_URL", server.base_url());
 
+        
+        let Ok(endpoint) = utils::get_endpoint("user_get_by_id", &["1"]) else {
+            panic!("user_get_by_id endpoint doesn't exists");
+        };
+
         let _m = server.mock(|when, then| {
-            when.method(GET).path("/user/1");
+            when.method(GET).path(endpoint);
             then.status(200)
                 .header("Content-Type", "application/json")
-                .body("{ \"id\": 1, \"username\": \"test\", \"email\": \"user@gmail.com\"}");
+                .body(r#"{ "id": 1, "username": "test", "email": "user@gmail.com"}"#);
         });
 
         match get_user_info(1, String::from("fldjsafkljsadlkfj29527u5")).await {
             Ok(res) => {
                 assert_eq!(res.code, result::ResultCode::SUCCESS);
-                assert!(res.content == Some(serde_json::from_str("{ \"id\": 1, \"username\": \"test\", \"email\": \"user@gmail.com\"}").unwrap()));
+                assert!(
+                    res.content
+                        == Some(
+                            serde_json::from_str(
+                                r#"{ "id": 1, "username": "test", "email": "user@gmail.com"}"#
+                            )
+                            .unwrap()
+                        )
+                );
             }
             Err(e) => {
                 panic!("{e:?}");
@@ -218,11 +233,16 @@ mod test {
         let server = MockServer::start();
         std::env::set_var("SERVER_URL", server.base_url());
 
+        
+        let Ok(endpoint) = utils::get_endpoint("user_create", &[]) else {
+            panic!("user_create endpoint doesn't exists");
+        };
+
         let _m = server.mock(|when, then| {
-            when.method(POST).path("/user/create");
+            when.method(POST).path(endpoint);
             then.status(200)
                 .header("Content-Type", "application/json")
-                .body("{ \"token\" : \"fljdasf85425fklhafasflas\" }");
+                .body(r#"{ "token" : "fljdasf85425fklhafasflas" }"#);
         });
 
         match create_user(
@@ -238,7 +258,7 @@ mod test {
                 assert_eq!(
                     res.content,
                     Some(
-                        serde_json::from_str("{ \"token\" : \"fljdasf85425fklhafasflas\" }")
+                        serde_json::from_str(r#"{ "token" : "fljdasf85425fklhafasflas" }"#)
                             .unwrap()
                     )
                 );
@@ -254,11 +274,16 @@ mod test {
         let server = MockServer::start();
         std::env::set_var("SERVER_URL", server.base_url());
 
+        
+        let Ok(endpoint) = utils::get_endpoint("login", &[]) else {
+            panic!("login endpoint doesn't exists");
+        };
+
         let _m = server.mock(|when, then| {
-            when.method(POST).path("/login");
+            when.method(POST).path(endpoint);
             then.status(200)
                 .header("Content-Type", "application/json")
-                .body("{ \"token\" : \"fljdasf85425fklhafasflas\" }");
+                .body(r#"{ "token" : "fljdasf85425fklhafasflas" }"#);
         });
 
         match login(Some("user".into()), Some("pass".into()), None).await {
@@ -267,7 +292,41 @@ mod test {
                 assert_eq!(
                     res.content,
                     Some(
-                        serde_json::from_str("{ \"token\" : \"fljdasf85425fklhafasflas\" }")
+                        serde_json::from_str(r#"{ "token" : "fljdasf85425fklhafasflas" }"#)
+                            .unwrap()
+                    )
+                );
+            }
+            Err(e) => {
+                panic!("{e:?}");
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn test_login_user_with_token_only() {
+        let server = MockServer::start();
+        std::env::set_var("SERVER_URL", server.base_url());
+
+        
+        let Ok(endpoint) = utils::get_endpoint("login", &[]) else {
+            panic!("login endpoint doesn't exists");
+        };
+
+        let _m = server.mock(|when, then| {
+            when.method(POST).path(endpoint);
+            then.status(200)
+                .header("Content-Type", "application/json")
+                .body(r#"{ "token" : "fljdasf85425fklhafasflas" }"#);
+        });
+
+        match login(None, None, Some("fljdasf85425fklhafasflas".into())).await {
+            Ok(res) => {
+                assert_eq!(res.code, result::ResultCode::SUCCESS);
+                assert_eq!(
+                    res.content,
+                    Some(
+                        serde_json::from_str(r#"{ "token" : "fljdasf85425fklhafasflas" }"#)
                             .unwrap()
                     )
                 );
@@ -287,7 +346,7 @@ mod test {
             when.method(POST).path("/login/poulet");
             then.status(200)
                 .header("Content-Type", "application/json")
-                .body("{ \"token\" : \"fljdasf85425fklhafasflas\" }");
+                .body(r#"{ "token" : "fljdasf85425fklhafasflas" }"#);
         });
 
         match login(Some("user".into()), Some("pass".into()), None).await {

@@ -3,6 +3,7 @@ function getCookieValue(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
   if (parts.length === 2) return parts.pop().split(';').shift();
+  else return token;
 }
 
 function clearCookieValue(name) {
@@ -27,6 +28,7 @@ let createAccountForm;
 let channelCreateForm;
 let serverCreateForm;
 let logoutBtn;
+let token;
 
 function onReady() {
   chat = document.getElementById("convo-chat");
@@ -170,8 +172,11 @@ async function login(e) {
     return;
   }
   invoke("login", {email:usernameInput, password:passwordInput}).then((result)=>{
-    console.log(document.cookie)
     document.cookie = "TOKEN="+result.content.token;
+    if (getCookieValue("TOKEN")==undefined) {
+      token = "undefined";
+    }
+    console.log(document.cookie)
     userId = result.content.id;
     form.style.display = "none";
     afterLogin();

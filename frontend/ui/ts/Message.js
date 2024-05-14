@@ -99,7 +99,9 @@ class Message {
 
 
     insertIntoConv(messageBloc) {
-        if (document.getElementById(messageBloc.id)!= null) {
+        
+        if (document.querySelector("[date=\""+messageBloc.getAttribute("date")+"\"]")!=null) {
+            console.log("already have date")
             return;
         }
         let current = chat.lastElementChild;

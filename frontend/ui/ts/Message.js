@@ -99,9 +99,9 @@ class Message {
 
 
     insertIntoConv(messageBloc) {
-        
-        if (document.querySelector("[date=\""+messageBloc.getAttribute("date")+"\"]")!=null) {
-            console.log("already have date")
+        console.log(messageBloc.id);
+        if (document.getElementById(messageBloc.id)!=null) {
+            console.log("already have id")
             return;
         }
         let current = chat.lastElementChild;
@@ -139,7 +139,6 @@ class Message {
 async function fetchMoreMsg(channelid, msgDate) {
     // call to get_message
     invoke("get_latest_messages", {channelId:channelid, amount:30, before:msgDate, token:getCookieValue("TOKEN")}).then(async (result)=> {
-        console.log("more!!!!", result)
         for (const message of result.content) {
             let author = new User(message.author.id,
                                  message.author.username,

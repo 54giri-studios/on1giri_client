@@ -44,4 +44,32 @@ The executable can then be found at `./frontend/src-tauri/target/release/onigiri
 
 # Setup with Docker
 
-#TODO
+Le project peut se lancer de manière isolée avec Docker. Cependant il est plus simple de lancer le projet avec docker-compose.
+
+Pour lancer le projet de manière isolée, il suffit de lancer les commandes suivantes:
+
+```bash
+docker build -t on1giri-front .
+docker run -it --rm -p 8000:8000 on1giri-front
+```
+
+Cependant pour cela vous devez disposer du serveur, ainsi que la base de donnees. 
+L'adresse du serveur peut etre modifiee dans le fichier `./frontend/src-tauri/.env` sous `SERVER_URL`.
+
+Pour lancer le projet avec docker compose, vous devrez, pour commencer, creer le containeur db et ensuite ajouter les tables necessaires a la base de donnees. Cette etape est necessaire car dans le fonctionnement de docker, le service backend malgre qu'il depend du service db, n'attends pas que la base de donnees soit prete avant de se lancer. Ce qui cause des erreurs a l'execution de l'etape de migration. (le script wait-for-db.sh est une tentative de resolution de ce probleme mais qui n'a pas aboutie dans son etat actuel).
+
+```bash
+docker compose up db
+docker compose run --rm backend diesel migration run
+```
+
+
+Pour continuer il faudra que docker ait acces au serveur X de votre machine. Sur linux, cela se fait directement a travers le socket de la machine, il faudra donc vous assurer que la variable d'environnement `DISPLAY` est bien definie et que sa valeur est `DISPLAY=$DISPLAY:0`. Apres cette etape vous devrez autoriser l'acces a votre serveur X en lancant la commande : `xhost +local:`. Sur Mac, il faudra installer XQuartz et lancer la commande `xhost +si:hostname:$(hostname)` pour autoriser les connexions X11 par votre hote a votre machine. Par contre la valeur de la variable d'environnement `DISPLAY` sera differente, il vous faudra renseigner votre adresse IP a la place de $DISPLAY. Ce sera donc `DISPLAY=$IP:0`.
+
+Vous pourrez ensuite demarrer le projet avec les commandes suivantes:
+
+```bash
+docker compose up
+```
+
+Cette commande lancera tous les services necessaires pour le projet. Vous pouvez acceder a l'application a l'adresse `http://127.0.0.1:8000` (par defaut).

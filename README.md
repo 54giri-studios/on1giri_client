@@ -59,7 +59,7 @@ In order to use the following commands correctly, the assumed file hierarchy is 
 ```
 
 This is a folder containing the server and client as well as the docker-compose.yml file.
-This repository can be found at ![](https://github.com/SamuelVanie/the_social_network). If you use this repository, you'll need to retrieve updates from the server and client repositories with the command : 
+This repository can be found at [the_social_network](https://github.com/SamuelVanie/the_social_network). If you use this repository, you'll need to retrieve updates from the server and client repositories with the command : 
 
 ```
 git submodule update --remote

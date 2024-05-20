@@ -44,7 +44,27 @@ The executable can then be found at `./frontend/src-tauri/target/release/onigiri
 
 # Setup with Docker
 
-Le project peut se lancer de manière isolée avec Docker. Cependant il est plus simple de lancer le projet avec docker-compose.
+Le project peut se lancer de manière isolée avec Docker. Cependant il est plus simple de lancer le projet avec docker compose.
+
+Afin de correctement utiliser les commandes suivantes, la hierarchie de fichiers supposee est la suivante :
+
+```
+  drwxr-xr-x@  7 samuelmichaelvanie  staff  224 May 20 09:23 .
+  drwxr-xr-x@  3 samuelmichaelvanie  staff   96 Apr  9 14:54 ..
+  drwxr-xr-x@ 15 samuelmichaelvanie  staff  480 May 20 09:35 .git
+  -rw-r--r--@  1 samuelmichaelvanie  staff  208 Apr  9 14:54 .gitmodules
+  -rw-r--r--@  1 samuelmichaelvanie  staff  947 May 20 09:23 docker-compose.yml
+  drwxr-xr-x@  6 samuelmichaelvanie  staff  192 May 20 09:32 on1giri_client
+  drwxr-xr-x@ 19 samuelmichaelvanie  staff  608 May 20 09:33 on1giri_server
+```
+
+Il s'agit la d'un dossier contenant le serveur et le client ainsi que le fichier docker-compose.yml.
+Ce depot peut-etre retrouve sur ![](https://github.com/SamuelVanie/the_social_network). Si vous utilisez ce depot il faudra recuperer les mise a jour des depots du serveur et du client avec la commande : 
+
+```
+git submodule update --remote
+```
+
 
 Pour lancer le projet de manière isolée, il suffit de lancer les commandes suivantes:
 

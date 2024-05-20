@@ -44,9 +44,9 @@ The executable can then be found at `./frontend/src-tauri/target/release/onigiri
 
 # Setup with Docker
 
-Le project peut se lancer de manière isolée avec Docker. Cependant il est plus simple de lancer le projet avec docker compose.
+The project can be launched in isolation with Docker. However, it is simpler to launch the project with docker compose.
 
-Afin de correctement utiliser les commandes suivantes, la hierarchie de fichiers supposee est la suivante :
+In order to use the following commands correctly, the assumed file hierarchy is as follows:
 
 ```
   drwxr-xr-x@  7 samuelmichaelvanie  staff  224 May 20 09:23 .
@@ -58,25 +58,25 @@ Afin de correctement utiliser les commandes suivantes, la hierarchie de fichiers
   drwxr-xr-x@ 19 samuelmichaelvanie  staff  608 May 20 09:33 on1giri_server
 ```
 
-Il s'agit la d'un dossier contenant le serveur et le client ainsi que le fichier docker-compose.yml.
-Ce depot peut-etre retrouve sur ![](https://github.com/SamuelVanie/the_social_network). Si vous utilisez ce depot il faudra recuperer les mise a jour des depots du serveur et du client avec la commande : 
+This is a folder containing the server and client as well as the docker-compose.yml file.
+This repository can be found at ![](https://github.com/SamuelVanie/the_social_network). If you use this repository, you'll need to retrieve updates from the server and client repositories with the command : 
 
 ```
 git submodule update --remote
 ```
 
 
-Pour lancer le frontend de manière isolée, il suffit de lancer les commandes suivantes:
+To launch the project in isolation, you can use the following commands:
 
 ```bash
 docker build -t on1giri-front .
 docker run -it --rm -p 8000:8000 on1giri-front
 ```
 
-Cependant pour cela vous devez disposer du serveur, ainsi que la base de donnees. 
-L'adresse du serveur peut etre modifiee dans le fichier `./frontend/src-tauri/.env` sous `SERVER_URL`.
+To do this, however, you need the server and the database. 
+The server address can be changed in the file `./frontend/src-tauri/.env` under `SERVER_URL`.
 
-Pour lancer le projet avec docker compose, vous devrez, pour commencer, creer le containeur db et ensuite ajouter les tables necessaires a la base de donnees. Cette etape est necessaire car dans le fonctionnement de docker, le service backend malgre qu'il depend du service db, n'attends pas que la base de donnees soit prete avant de se lancer. Ce qui cause des erreurs a l'execution de l'etape de migration. (le script wait-for-db.sh est une tentative de resolution de ce probleme mais qui n'a pas aboutie dans son etat actuel).
+To launch the project with docker compose, you'll first need to create the db container and then add the necessary database tables. This step is necessary because, as docker works, the backend service, although dependent on the db service, doesn't wait for the database to be ready before starting up. This causes errors during the migration stage. (The wait-for-db.sh script is an attempt to solve this problem, but has failed in its current state).
 
 ```bash
 docker compose up db
@@ -84,12 +84,12 @@ docker compose run --rm backend diesel migration run
 ```
 
 
-Pour continuer il faudra que docker ait acces au serveur X de votre machine. Sur linux, cela se fait directement a travers le socket de la machine, il faudra donc vous assurer que la variable d'environnement `DISPLAY` est bien definie et que sa valeur est `DISPLAY=$DISPLAY:0`. Apres cette etape vous devrez autoriser l'acces a votre serveur X en lancant la commande : `xhost +local:`. Sur Mac, il faudra installer XQuartz et lancer la commande `xhost +si:hostname:$(hostname)` pour autoriser les connexions X11 par votre hote a votre machine. Par contre la valeur de la variable d'environnement `DISPLAY` sera differente, il vous faudra renseigner votre adresse IP a la place de $DISPLAY. Ce sera donc `DISPLAY=$IP:0`.
+To continue, docker must have access to the X server on your machine. On Linux, this is done directly through the machine's socket, so make sure that the `DISPLAY` environment variable is set to `DISPLAY=$DISPLAY:0`. After this step, you'll need to authorize access to your X server by issuing the command: `xhost +local:`. On a Mac, you'll need to install XQuartz and run the command `xhost +si:hostname:$(hostname)` to authorize X11 connections from your host to your machine. However, the value of the `DISPLAY` environment variable will be different, so you'll need to enter your IP address instead of $DISPLAY. This will be `DISPLAY=$IP:0`.
 
-Vous pourrez ensuite demarrer le projet avec les commandes suivantes:
+You can then start the project with the following commands:
 
 ```bash
 docker compose up
 ```
 
-Cette commande lancera tous les services necessaires pour le projet. Vous pouvez acceder a l'application a l'adresse `http://127.0.0.1:8000` (par defaut).
+This command will launch all the services required for the project. You can access the application at `http://127.0.0.1:8000` (default).

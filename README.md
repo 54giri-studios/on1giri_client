@@ -66,7 +66,7 @@ git submodule update --remote
 ```
 
 
-Pour lancer le projet de manière isolée, il suffit de lancer les commandes suivantes:
+Pour lancer le frontend de manière isolée, il suffit de lancer les commandes suivantes:
 
 ```bash
 docker build -t on1giri-front .

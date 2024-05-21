@@ -15,7 +15,7 @@ class ServerButton {
         
         let innerToolTip = document.createElement("span");
         innerToolTip.className = "tooltiptext";
-        innerToolTip.innerText = this.name;
+        innerToolTip.innerText = this.id + " - " +this.name;
         button.appendChild(innerToolTip);
         
         button.id = "server" + this.id;
